@@ -4,55 +4,41 @@
 #include <string>
 #include <iostream>
 #include <stdexcept>
-int unitmapValue(int i)
+#include <unordered_map>
+DataEntryEQ::DataEntryEQ(const std::vector<std::string> &row, const std::string &focusitem, std::vector<std::pair<std::string, int>> titleTest) : moveInWaferCount(0.0), moveOutWaferCount(0.0), moveInOperator(0.0),
+                                                                                                                                                  diffMaxMin(0.0), head1Rpm(0.0), head2Rpm(0.0), head3Rpm(0.0), head4Rpm(0.0),
+                                                                                                                                                  patenRpm(0.0), slurry1Flow(0.0),
+                                                                                                                                                  headUnit(0), headRPMvec(3, std::vector<double>(4, 0.0)), innerTubePresvec(3, std::vector<double>(4, 0.0)), membranePresvec(3, std::vector<double>(4, 0.0)), retaRingPresvec(3, std::vector<double>(4, 0.0)), conHeadPresvec(3, 0.0), conHeadRpmvec(3, 0.0), epTimevec(3, 0.0)
 {
-    if (i == 1)
-        return 0;
-    else if (i == 2)
-        return 1;
-    else if (i == 3)
-        return 2;
-    else if (i == 4)
-        return 3;
-    else
-        return -1;
-}
-DataEntryEQ::DataEntryEQ(const std::vector<std::string> &row)
-    : lotJobSequence(0.0), chamber(0.0), moveInWaferCount(0.0), moveOutWaferCount(0.0), moveInOperator(0.0),
-      diffMaxMin(0.0), head1Rpm(0.0), head2Rpm(0.0), head3Rpm(0.0), head4Rpm(0.0),
-      patenRpm(0.0), slurry1Flow(0.0),
-      headUnit(0), headRPMvec(3, std::vector<double>(4, 0.0)), innerTubePresvec(3, std::vector<double>(4, 0.0)), membranePresvec(3, std::vector<double>(4, 0.0)), retaRingPresvec(3, std::vector<double>(4, 0.0)), conHeadPresvec(3, 0.0), conHeadRpmvec(3, 0.0), epTimevec(3, 0.0)
-{
-    checkRowSize(row, 46);
-    lot = row[0];
-    wafer = row[1];
-    lotJobSequence = convertAndHandle<double>(row[2]);
-    chamber = convertAndHandle<double>(row[3]);
-    recipeStep = row[4];
-    product = row[5];
-    process = row[6];
-    puType = row[7];
-    routeName = row[8];
-    stepName = row[9];
-    processUnit = row[10];
-    puFamily = row[11];
-    area = row[12];
-    recipe1 = row[13];
-    recipe2 = row[14];
-    moveInTime = row[15];
-    moveOutTime = row[16];
-    moveInWaferCount = convertAndHandle<double>(row[17]);  // 17
-    moveOutWaferCount = convertAndHandle<double>(row[18]); // 18
-    moveInOperator = convertAndHandle<double>(row[19]);    // 19                                                     // 20
-    moveOutOperator = row[20];
-    diffMaxMin = convertAndHandle<double>(row[24]);
-    head1Rpm = convertAndHandle<double>(row[28]); // 28
-    head2Rpm = convertAndHandle<double>(row[29]);
-    head3Rpm = convertAndHandle<double>(row[30]);
-    head4Rpm = convertAndHandle<double>(row[31]);
-    patenRpm = convertAndHandle<double>(row[40]); // 40
-    slurry1Flow = convertAndHandle<double>(row[45]);
-    keyDE = lot + wafer;
+    lot = row[findValue(titleTest, "LOT")];
+    wafer = row[findValue(titleTest, "WAFER")];
+    lotJobSequence = row[findValue(titleTest, "LOTJOBSEQUENCE")];
+    chamber = row[findValue(titleTest, "CHAMBER")];
+    recipeStep = row[findValue(titleTest, "RECIPE_STEP")];
+    product = row[findValue(titleTest, "PRODUCT")];
+    process = row[findValue(titleTest, "PROCESS")];
+    puType = row[findValue(titleTest, "PUTYPE")];
+    routeName = row[findValue(titleTest, "ROUTENAME")];
+    stepName = row[findValue(titleTest, "STEPNAME")];
+    processUnit = row[findValue(titleTest, "PROCESSINGUNIT")];
+    puFamily = row[findValue(titleTest, "PUFAMILY")];
+    area = row[findValue(titleTest, "AREA")];
+    recipe1 = row[findValue(titleTest, "RECIPE1")];
+    recipe2 = row[findValue(titleTest, "RECIPE2")];
+    moveInTime = row[findValue(titleTest, "MOVE_IN_TIME")];
+    moveOutTime = row[findValue(titleTest, "MOVE_OUT_TIME")];
+    moveInWaferCount = convertAndHandle<double>(row[findValue(titleTest, "MOVE_IN_WAFER_COUNT")], row); // 17
+    moveOutWaferCount = convertAndHandle<double>(row[findValue(titleTest, "MOVE_OUT_WAFER_COUNT")]);    // 18
+    moveInOperator = convertAndHandle<double>(row[findValue(titleTest, "MOVE_IN_OPERATOR")]);           // 19                                                     // 20
+    moveOutOperator = row[findValue(titleTest, "MOVE_OUT_OPERATOR")];
+    diffMaxMin = convertAndHandle<double>(row[findValue(titleTest, "Diff_MaxMin")]);
+    head1Rpm = convertAndHandle<double>(row[findValue(titleTest, "HEAD1_RPM")]); // 28
+    head2Rpm = convertAndHandle<double>(row[findValue(titleTest, "HEAD2_RPM")]);
+    head3Rpm = convertAndHandle<double>(row[findValue(titleTest, "HEAD3_RPM")]);
+    head4Rpm = convertAndHandle<double>(row[findValue(titleTest, "HEAD4_RPM")]);
+    patenRpm = convertAndHandle<double>(row[findValue(titleTest, "PLATEN_RPM")]); // 40
+    slurry1Flow = convertAndHandle<double>(row[findValue(titleTest, "SLURRY1_FLOW")]);
+    keyDE = lot + wafer + routeName;
     if (head1Rpm != 0.0)
     {
         headUnit = 1;
@@ -69,62 +55,68 @@ DataEntryEQ::DataEntryEQ(const std::vector<std::string> &row)
     {
         headUnit = 4;
     }
-    int i = unitmapValue(chamber), j = unitmapValue(headUnit);
-    headRPMvec[i][j] = convertAndHandle<double>(row[28 + j]);
-    innerTubePresvec[i][j] = convertAndHandle<double>(row[32 + j]); // 3set cuz 3 platen;by4
-    membranePresvec[i][j] = convertAndHandle<double>(row[36 + j]);  // 3set cuz 3 platen;by4
-    retaRingPresvec[i][j] = convertAndHandle<double>(row[41 + j]);  // 3set cuz 3 platen;by4
-    conHeadPresvec[i] = convertAndHandle<double>(row[21]);          // 3set cuz 3 platen         // 21
-    conHeadRpmvec[i] = convertAndHandle<double>(row[22]);           // 3set cuz 3 platen
-    epTimevec[i] = convertAndHandle<double>(row[25 + i]);
-    keyRoute = lot.substr(0, 5) + wafer + routeName; // 3set cuz 3 platen
+    setFileDataInit(row, focusitem, titleTest); // INIT
 }
-DataEntryEQ &DataEntryEQ::setPlaten(const std::vector<std::string> &row, const int &i)
+int DataEntryEQ::getHeadUnit() const
 {
-    int k = unitmapValue(chamber), j = unitmapValue(headUnit);
-    if (i == 1)
-    {
-        conHeadPresvec[0] = convertAndHandle<double>(row[21]); // 21
-        conHeadRpmvec[0] = convertAndHandle<double>(row[22]);
-        epTimevec[0] = convertAndHandle<double>(row[25]);
-        headRPMvec[0][j] = convertAndHandle<double>(row[28 + j]);
-        innerTubePresvec[0][j] = convertAndHandle<double>(row[32 + j]); // 3set cuz 3 platen;by4
-        membranePresvec[0][j] = convertAndHandle<double>(row[36 + j]);  // 3set cuz 3 platen;by4
-        retaRingPresvec[0][j] = convertAndHandle<double>(row[41 + j]);  // 3set cuz 3 platen;by4
-        conHeadPresvec[0] = convertAndHandle<double>(row[21]);          // 3set cuz 3 platen         // 21
-        conHeadRpmvec[0] = convertAndHandle<double>(row[22]);           // 3set cuz 3 platen
-        epTimevec[0] = convertAndHandle<double>(row[25]);               // 3set cuz 3 platen
-    }
-    else if (i == 2)
-    { // 22
-        conHeadPresvec[1] = convertAndHandle<double>(row[21]);
-        conHeadRpmvec[1] = convertAndHandle<double>(row[22]);
-        epTimevec[1] = convertAndHandle<double>(row[26]);
-        headRPMvec[1][j] = convertAndHandle<double>(row[28 + j]);
-        innerTubePresvec[1][j] = convertAndHandle<double>(row[32 + j]); // 3set cuz 3 platen;by4
-        membranePresvec[1][j] = convertAndHandle<double>(row[36 + j]);  // 3set cuz 3 platen;by4
-        retaRingPresvec[1][j] = convertAndHandle<double>(row[41 + j]);  // 3set cuz 3 platen;by4
-        conHeadPresvec[1] = convertAndHandle<double>(row[21]);          // 3set cuz 3 platen         // 21
-        conHeadRpmvec[1] = convertAndHandle<double>(row[22]);           // 3set cuz 3 platen
-        epTimevec[1] = convertAndHandle<double>(row[26]);               // 3set cuz 3 platen
-    }
-    else if (i == 3)
-    {
-        conHeadPresvec[2] = convertAndHandle<double>(row[21]);
-        conHeadRpmvec[2] = convertAndHandle<double>(row[22]);
-        epTimevec[2] = convertAndHandle<double>(row[27]);
-        headRPMvec[2][j] = convertAndHandle<double>(row[28 + j]);
-        innerTubePresvec[2][j] = convertAndHandle<double>(row[32 + j]); // 3set cuz 3 platen;by4
-        membranePresvec[2][j] = convertAndHandle<double>(row[36 + j]);  // 3set cuz 3 platen;by4
-        retaRingPresvec[2][j] = convertAndHandle<double>(row[41 + j]);  // 3set cuz 3 platen;by4
-        conHeadPresvec[2] = convertAndHandle<double>(row[21]);          // 3set cuz 3 platen         // 21
-        conHeadRpmvec[2] = convertAndHandle<double>(row[22]);           // 3set cuz 3 platen
-        epTimevec[2] = convertAndHandle<double>(row[27]);               // 3set cuz 3 platen
-    }
-    keyRoute = lot.substr(0, 5) + wafer + routeName;
-    return *this;
+    return headUnit;
 }
-size_t DataEntry::size() const
+void DataEntryEQ::setFileData(const std::vector<std::string> &row, const std::string &focusitem, std::vector<std::pair<std::string, int>> titleTest)
+{
+    std::string ch{focusitem};
+    std::string chNostring = row[findValue(titleTest, focusitem)];
+    int chNO, unitNo;
+    chNO = convertAndHandle<int>(chNostring);
+    double h1 = convertAndHandle<double>(row[findValue(titleTest, "HEAD1_RPM")]);
+    double h2 = convertAndHandle<double>(row[findValue(titleTest, "HEAD2_RPM")]);
+    double h3 = convertAndHandle<double>(row[findValue(titleTest, "HEAD3_RPM")]);
+    double h4 = convertAndHandle<double>(row[findValue(titleTest, "HEAD4_RPM")]);
+    if (h1 != 0)
+    {
+        unitNo = 1;
+    }
+    else if (h2 != 0)
+    {
+        unitNo = 2;
+    }
+    else if (h3 != 0)
+    {
+        unitNo = 3;
+    }
+    else if (h4 != 0)
+    {
+        unitNo = 4;
+    }
+    else
+    {
+        unitNo = 0;
+    }
+    int i = unitmapValue(chNO), j = unitmapValue(unitNo);
+    headRPMvec[i][j] = convertAndHandle<double>(row[findValue(titleTest, "HEAD1_RPM") + j]);
+    innerTubePresvec[i][j] = convertAndHandle<double>(row[findValue(titleTest, "INNERTUBE1_PRES") + j]); // 3set cuz 3 platen;by4
+    membranePresvec[i][j] = convertAndHandle<double>(row[findValue(titleTest, "MEMBRANE1_PRES") + j]);   // 3set cuz 3 platen;by4
+    retaRingPresvec[i][j] = convertAndHandle<double>(row[findValue(titleTest, "RETA_RING1_PRES") + j]);  // 3set cuz 3 platen;by4
+    conHeadPresvec[i] = convertAndHandle<double>(row[findValue(titleTest, "CON_HEAD_PRES")]);            // 3set cuz 3 platen         // 21
+    conHeadRpmvec[i] = convertAndHandle<double>(row[findValue(titleTest, "CON_HEAD_PRES")]);             // 3set cuz 3 platen
+    epTimevec[i] = convertAndHandle<double>(row[findValue(titleTest, "EP_TIME1") + i]);
+    keyRoute = processUnit + routeName;
+}
+void DataEntryEQ::setFileDataInit(const std::vector<std::string> &row, const std::string &focusitem, std::vector<std::pair<std::string, int>> titleTest)
+{
+    std::string ch{focusitem};
+    std::unordered_map<std::string, int> chMap{
+        {"1", 0}, {"2", 1}, {"3", 2}};
+    int i = chMap[chamber], j = unitmapValue(headUnit);
+    headRPMvec[i][j] = convertAndHandle<double>(row[findValue(titleTest, "HEAD1_RPM") + j]);
+    innerTubePresvec[i][j] = convertAndHandle<double>(row[findValue(titleTest, "INNERTUBE1_PRES") + j]); // 3set cuz 3 platen;by4
+    membranePresvec[i][j] = convertAndHandle<double>(row[findValue(titleTest, "MEMBRANE1_PRES") + j]);   // 3set cuz 3 platen;by4
+    retaRingPresvec[i][j] = convertAndHandle<double>(row[findValue(titleTest, "RETA_RING1_PRES") + j]);  // 3set cuz 3 platen;by4
+    conHeadPresvec[i] = convertAndHandle<double>(row[findValue(titleTest, "CON_HEAD_PRES")]);            // 3set cuz 3 platen         // 21
+    conHeadRpmvec[i] = convertAndHandle<double>(row[findValue(titleTest, "CON_HEAD_PRES")]);             // 3set cuz 3 platen
+    epTimevec[i] = convertAndHandle<double>(row[findValue(titleTest, "EP_TIME1") + i]);
+    keyRoute = processUnit + routeName;
+} // 3set cuz 3 platen
+size_t DataEntryEQ::size() const
 {
     return 45;
 }
@@ -151,8 +143,7 @@ double DataEntryEQ::getCMPeqp(const int &platen, const std::vector<std::vector<d
 }
 std::string DataEntryEQ::getKeyDE() const
 {
-    std::string keyD = lot.substr(0, 5) + wafer;
-    return keyD;
+    return keyDE;
 }
 std::vector<std::vector<double>> DataEntryEQ::getHeadRPMvec() const
 {
@@ -193,7 +184,8 @@ void writeCMPEQToStream(std::ofstream &os, const DataEntryEQ &c)
        << c.getConHeadPres(2) << ","
        << c.getConHeadRpmvec(2) << ","
        << c.getConHeadPres(3) << ","
-       << c.getConHeadRpmvec(3) << ",";
+       << c.getConHeadRpmvec(3) << ","
+       << c.getSlurryFlow() << ",";
 }
 double DataEntryEQ::getEpTime(const int &platen) const
 {
@@ -216,4 +208,16 @@ double DataEntryEQ::getConHeadRpmvec(const int &platen) const
 std::string DataEntryEQ::getKeyRoute() const
 {
     return keyRoute;
+}
+double DataEntryEQ::getSlurryFlow() const
+{
+    return slurry1Flow;
+}
+std::string DataEntryEQ::getMoveOutTime() const
+{
+    return moveOutTime;
+}
+std::string DataEntryEQ::getKeyEQ_Route_PU_MoveOut() const
+{
+    return lot.substr(0, 5) + processUnit + routeName + moveOutTime;
 }

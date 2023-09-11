@@ -1,0 +1,83 @@
+{
+    "configurations": [
+        {
+            "name": "C/C++: MYclang++ 建置及偵錯使用中的檔案",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${fileDirname}/dataentry.cpp",
+            "args": [
+                "-std=c++20",
+                "-stdlib=libc++",
+                "-g",
+                "${file}",
+                "-o",
+                "${fileDirname}/rooster"
+            ],
+            "stopAtEntry": false,
+            "cwd": "${fileDirname}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "lldb",
+            "preLaunchTask": "C/C++: clang++ 建置使用中檔案"
+        },
+        {
+            "name": "(lldb) Launch",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "輸入程式名稱，例如 ${workspaceFolder}/a.out",
+            "args": [
+                "-std=c++20",
+                "-stdlib=libc++",
+                "-g",
+                "${file}",
+                "-o",
+                "${fileDirname}/rooster"
+            ],
+            "stopAtEntry": false,
+            "cwd": "${fileDirname}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "lldb"
+        },
+        {
+            "name": "C/C++: g++ 建置及偵錯使用中的檔案",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${fileDirname}/rooster",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${fileDirname}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "lldb",
+            "preLaunchTask": "C/C++: g++ 建置使用中檔案"
+        },
+        {
+            "name": "C/C++: cpp 建置及偵錯使用中的檔案",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${fileDirname}/${fileBasenameNoExtension}",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${fileDirname}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "lldb",
+            "preLaunchTask": "C/C++: cpp 建置使用中檔案"
+        },
+        {
+            "name": "C/C++: clang 建置及偵錯使用中的檔案",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${fileDirname}/${fileBasenameNoExtension}",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${fileDirname}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "lldb",
+            "preLaunchTask": "C/C++: clang 建置使用中檔案"
+        }
+    ],
+    "version": "2.0.0"
+}

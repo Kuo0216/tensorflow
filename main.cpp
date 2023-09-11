@@ -10,62 +10,105 @@
 #include <algorithm>
 #include "datacheck.h"
 #include "readcsv.h"
-#include "mountain.h"
-#include "country.h"
 #include "wat.h"
 #include "lookup.h"
 #include <utility>
-#include "Eigen/Dense"
-#include "reg.h"
+#include "inlinetr.h"
+#include "fttest.h"
+#include "runsheet.h"
+#include "defect.h"
+#include "eqlot.h"
 int main()
-{ //
-
-    Eigen::VectorXd vec3(5);
-    vec3 << 1, 2, 3, 4, 5;
-    Eigen::VectorXd vec4(5);
-    vec4 << 2, 4, 6, 8, 10;
-    double regression_coefficient = calculateRegressionCoefficient(vec3, vec4);
-    std::cout << "Regression Coefficient: " << regression_coefficient << std::endl;
-    Eigen::MatrixXd m(2, 2);
-    m(0, 0) = 3;
-    m(1, 0) = 2.5;
-    m(0, 1) = -1;
-    m(1, 1) = m(1, 0) + m(0, 1);
-    std::cout << m << std::endl;
-    std::vector<double> vec1{1, 2, 3, 4, 5};
-    std::vector<double> vec2{2, 4, 6, 8, 10};
-    double res = calculateRegressionCoefficient(vec1, vec2);
-    std::cout << "The answer is " << res << std::endl;
-    std::string filePath = "/Users/kuochangjung/C++/UMCREADDMM/beta.csv";
-    std::string filePathEQ = "/Users/kuochangjung/C++/UMCREADDMM/beta1.csv";
-    std::unordered_map<std::string, DataEntry> dataEntryMap;
-    std::vector<DataEntry> dataEntries = readCSV<DataEntry>(filePath, dataEntryMap);
+{
+    // std::vector<double> groupA = {11.2, 12.5, 14.3, 13.7, 12.8, b13.9, 11.7, 12.3, 12.6, 13.0};
+    // std::vector<double> groupB = {10.5, 10.8, 11.2, 11.0, 11.6, 10.9, 11.3, 11.7, 10.8, 11.5};
+    // // Calculate the F-test p-value
+    // double pValue = calculateFTestPValue(groupA, groupB);
+    // double p1Value = calculateTTestPValue(groupA, groupB);
+    // std::cout << "F-test p-Value: " << pValue << std::endl;
+    // std::cout << "T-test p-Value: " << p1Value << std::endl;
+    std::string filePath = "/Users/kuochangjung/C++/UMCREADDMM/WAT.csv";
+    std::string filePathEQ = "/Users/kuochangjung/C++/UMCREADDMM/EQWAFERCMP.csv";
+    std::string filePathInline = "/Users/kuochangjung/C++/UMCREADDMM/INLINE.csv";
+    std::string filePathRunsheet = "/Users/kuochangjung/C++/UMCREADDMM/RUNSHEET.csv";
+    std::string filePathDefect = "/Users/kuochangjung/C++/UMCREADDMM/DEFECT.csv";
+    std::string filePathEQLOT = "/Users/kuochangjung/C++/UMCREADDMM/EQLOTCMP.csv";
     std::unordered_map<std::string, WAT> watMap;
     std::vector<WAT> dataEntriesWAT = readCSV<WAT>(filePath, watMap);
     std::unordered_map<std::string, DataEntryEQ> dataEQMap;
-    std::vector<DataEntryEQ> dataEntriesEQ = CMPreadCSV<DataEntryEQ>(filePathEQ, dataEQMap);
-    std::vector<std::tuple<DataEntry, WAT, DataEntryEQ>> mergedData = lookup(dataEntryMap, watMap, dataEQMap);
-    std::ofstream omegaFile("/Users/kuochangjung/C++/UMCREADDMM/omega.csv");
+    std::vector<DataEntryEQ> dataEntriesEQ = readCSV<DataEntryEQ>(filePathEQ, dataEQMap);
+    std::unordered_map<std::string, InlineTR> inlineMap;
+    std::vector<InlineTR> dataEntriesInline = readCSV<InlineTR>(filePathInline, inlineMap);
+    std::unordered_map<std::string, Eqlot> dataEQLOTtMap;
+    std::vector<Eqlot> dataEntriesEQLOT = readCSV<Eqlot>(filePathEQLOT, dataEQLOTtMap);
+    std::unordered_map<std::string, Runsheet> dataRunsheetMap;
+    std::vector<Runsheet> dataEntriesRunsheet = readCSV<Runsheet>(filePathRunsheet, dataRunsheetMap);
+    std::unordered_map<std::string, Defect> dataDefectMap;
+    std::vector<Defect> dataEntriesDefect = readCSV<Defect>(filePathDefect, dataDefectMap);
+    std::vector<std::tuple<WAT, DataEntryEQ, InlineTR, Eqlot>> mergedData = lookup(watMap, dataEQMap, inlineMap, dataEQLOTtMap);
+    // std::vector<std::tuple<WAT, DataEntryEQ, InlineTR, Eqlot>> mergedData0 = lookup(watMap, dataEQMap, inlineMap, dataEQLOTtMap);
+    // std::vector<std::tuple<DataEntry, WAT, DataEntryEQ, InlineTR, Eqlot>> mergedData1 = lookup(dataEntryMap, watMap, dataEQMap, inlineMap, dataEQLOTtMap);
+    std::ofstream omegaFile("/Users/kuochangjung/C++/UMCREADDMM/WAT_TK_EQ_ALL.csv");
     if (!omegaFile.is_open())
     {
         std::cout << "Error opening omega.csv!" << std::endl;
-        return 1;
     }
-    omegaFile << "LOT,WAFER,PRODUCT,WIPTIME,WIPPU,ROUTENAME,STEPNAME,KEY,PARAMETER,SPECLOW,SPECTARGET,SPECHIGH,AVERAGE,TVALUE,BVALUE,CVALUE,RVALUE,LEFTVALUE,WAT_STDEV,HEADUNIT,HeadRPM,InnerTube,Membrane,RetRing,HeadRPMP2,InnerTubeP2,MembraneP2,RetRingP2,HeadRPMP3,InnerTubeP3,MembraneP3,RetRingP3,EP1,EP2,EP3,CON1_HEAD_PRES,CON1_HEAD_RPM,CON2_HEAD_PRES,CON2_HEAD_RPM,CON3_HEAD_PRES,CON3_HEAD_RPM\n";
-    // Print the merged data
+    std::cout << "LOT: "
+              << "\tWafer: "
+              << "\tProduct: "
+              << "\tWAT Average "
+              << "\tInline_TK_Average " << '\n';
+    std::cout << "=================================================================" << '\n';
+    omegaFile << "LOT,WAFER,PRODUCT,WIP_MVIN_TIME,WIP_PU,ROUTENAME,STEPNAME,PARAMETER,SPEC_CLOW,SPEC_TARGET,SPEC_HIGH,AVERAGE,T_VALUE,B_VALUE,C_VALUE,R_VALUE,L_VALUE,WAT_STDEV,HEAD_UNIT,HEAD_RPM,Innertube,Membrane,RetRing,Head_RPM_P2,Innertube_P2,Membrane_P2,Retring_P2,HEAD_RPM_P3,Innertube_P3,Membrane_P3,Retring_P3,EP_TIME1,EP_TIME2,EP_TIME3,CON1_HEAD_PRES,CON1_HEAD_RPM,CON2_HEAD_PRES,CON2_HEAD_RPM,CON3_HEAD_PRES,CON3_HEAD_RPM,Slurry1Flow,Inline_TK_Average,Inline_Range,Inline_TK_STDEV,M1,M2,M3,M4,M5,M6,M7,M8,M9,Headusage,Pad1_life,Pad2_life,Pad3_life,Condition_1,Condition_2,Condition_3\n";
     for (const auto &tuple : mergedData)
     {
-        const DataEntry &a = std::get<0>(tuple);
-        const WAT &b = std::get<1>(tuple);
-        const DataEntryEQ &c = std::get<2>(tuple);
-        std::cout << "LOT: " << a.getLot() << " Wafer: " << a.getWafer() << " Product: " << a.getProduct() << "WAT: " << b.calculateStandardDeviation() << std::endl;
-        writeBasicToStream(omegaFile, a);
-        writeWATToStream(omegaFile, b);
-        writeCMPEQToStream(omegaFile, c);
+        const WAT &a = std::get<0>(tuple);
+        const DataEntryEQ &b = std::get<1>(tuple);
+        const InlineTR &c = std::get<2>(tuple);
+        const Eqlot &d = std::get<3>(tuple);
+        writeWATToStream(omegaFile, a);
+        writeCMPEQToStream(omegaFile, b);
+        writeInlineToStream(omegaFile, c);
+        int unit = b.getHeadUnit();
+        writeEqlotToStream(omegaFile, d, unit);
         omegaFile << '\n';
+        std::cout << a.getLot() << "\t|" << a.getWafer() << "\t|" << a.getProduct() << "\t|" << a.getAverage() << "\t\t|" << c.getInlineTK_Calculate_vec()[0][0] << '\n';
     }
-    std::cout << std::endl;
     omegaFile.close();
-    std::cout << "omega.csv has been created successfully!" << std::endl;
+    std::cout << "=================================================================" << '\n';
+    std::cout << "WAT_TK_EQ_ALL.csv has been created successfully!" << std::endl;
+    std::cout << '\n';
+    std::cout << '\n';
+    std::cout << "=================\tsecond file\t=====================" << std::endl;
+    std::vector<std::tuple<InlineTR, DataEntryEQ, Eqlot>> mergedData3 = lookup(inlineMap, dataEQMap, dataEQLOTtMap);
+    std::ofstream omegaFile5("/Users/kuochangjung/C++/UMCREADDMM/TK_EQ_ALL.csv");
+    if (!omegaFile5.is_open())
+    {
+        std::cout << "Error opening omega.csv!" << std::endl;
+    }
+    std::cout << "LOT: "
+              << "\tWafer: "
+              << "\tProduct: "
+              << "\tTK Average "
+              << "\tP1 padlife " << '\n';
+    std::cout << "=================================================================" << '\n';
+    omegaFile5 << "LOT,WAFER,PROCWSS,PRODUCT,ROUTENAME,PROCESS_PU,Inline_TK_Average,Inline_Range,Inline_TK_STDEV,M1,M2,M3,M4,M5,M6,M7,M8,M9,HEAD_UNIT,HEAD_RPM,Innertube,Membrane,RetRing,Head_RPM_P2,Innertube_P2,Membrane_P2,Retring_P2,HEAD_RPM_P3,Innertube_P3,Membrane_P3,Retring_P3,EP_TIME1,EP_TIME2,EP_TIME3,CON1_HEAD_PRES,CON1_HEAD_RPM,CON2_HEAD_PRES,CON2_HEAD_RPM,CON3_HEAD_PRES,CON3_HEAD_RPM,Slurry1Flow,Headusage,Pad1_life,Pad2_life,Pad3_life,Condition_1,Condition_2,Condition_3\n";
+    for (const auto &tuple : mergedData3)
+    {
+        const InlineTR &a = std::get<0>(tuple);
+        const DataEntryEQ &b = std::get<1>(tuple);
+        const Eqlot &c = std::get<2>(tuple);
+        writeInlineToStream3(omegaFile5, a);
+        writeCMPEQToStream(omegaFile5, b);
+        int unit = b.getHeadUnit();
+        writeEqlotToStream(omegaFile5, c, unit);
+        omegaFile5 << '\n';
+        std::cout << a.getLot() << "\t|" << a.getWafer() << "\t|" << a.getProduct() << "\t|" << a.getInlineTK_Calculate_vec()[0][0] << "\t\t|" << c.getPlaten1UsingTime(1) << '\n';
+    }
+    omegaFile5.close();
+    std::cout << "=================================================================" << '\n';
+    std::cout << "TK_EQ_ALL.csv has been created successfully!" << std::endl;
+
+    std::vector<std::tuple<Defect, DataEntryEQ, Eqlot>> mergedData4 = lookup(dataDefectMap, dataEQMap, dataEQLOTtMap);
     return 0;
 }

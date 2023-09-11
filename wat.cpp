@@ -3,58 +3,51 @@
 #include <string>
 #include <iostream>
 #include <cmath>
-WAT::WAT(const std::vector<std::string> &row) : tValue(0.0), bValue(0.0), cValue(0.0), lValue(0.0), rValue(0.0),
-                                                blValue(0.0), brValue(0.0), tlValue(0.0), trValue(0.0), oosCount(0.0), stDevWAT(0.0), average(0.0), specLow(0.0), specHigh(0.0), ctrlLow(0.0), ctrlHigh(0.0)
+WAT::WAT(const std::vector<std::string> &row, const std::string &focusitem, std::vector<std::pair<std::string, int>> titleTest) : tValue(0.0), bValue(0.0), cValue(0.0), lValue(0.0), rValue(0.0),
+                                                                                                                                  blValue(0.0), brValue(0.0), tlValue(0.0), trValue(0.0), oosCount(0.0), stDevWAT(0.0), average(0.0), specLow(0.0), specHigh(0.0), ctrlLow(0.0), ctrlHigh(0.0)
 {
-    average = convertAndHandle<double>(row[12]);
-    tValue = convertAndHandle<double>(row[13]);
-    bValue = convertAndHandle<double>(row[14]); // 14
-    cValue = convertAndHandle<double>(row[15]); // 15
-    lValue = convertAndHandle<double>(row[16]); // 16
-    rValue = convertAndHandle<double>(row[17]); // 17
-    blValue = convertAndHandle<double>(row[18]);
-    brValue = convertAndHandle<double>(row[19]);
-    tlValue = convertAndHandle<double>(row[20]);
-    trValue = convertAndHandle<double>(row[21]);
-    testProg = row[22];
-    oosCount = convertAndHandle<int>(row[23]);
-    keyDE = row[3] + row[4];
-    parameter = row[5];
-    product = row[0];
+    average = convertAndHandle<double>(row[findValue(titleTest, "AVERAGE")]);
+    tValue = convertAndHandle<double>(row[findValue(titleTest, "T_VALUE")]);
+    bValue = convertAndHandle<double>(row[findValue(titleTest, "B_VALUE")]); // 14
+    cValue = convertAndHandle<double>(row[findValue(titleTest, "C_VALUE")]); // 15
+    lValue = convertAndHandle<double>(row[findValue(titleTest, "L_VALUE")]); // 16
+    rValue = convertAndHandle<double>(row[findValue(titleTest, "R_VALUE")]); // 17
+    blValue = convertAndHandle<double>(row[findValue(titleTest, "BL_VALUE")]);
+    brValue = convertAndHandle<double>(row[findValue(titleTest, "BR_VALUE")]);
+    tlValue = convertAndHandle<double>(row[findValue(titleTest, "TL_VALUE")]);
+    trValue = convertAndHandle<double>(row[findValue(titleTest, "TR_VALUE")]);
+    testProg = row[findValue(titleTest, "TEST_PROG")];
+    oosCount = convertAndHandle<int>(row[findValue(titleTest, "OOS_COUNT")]);
+    parameter = row[findValue(titleTest, "PARAMETER")];
+    product = row[findValue(titleTest, "PRODUCT")];
+    process = row[findValue(titleTest, "PROCESS")];
     stDevWAT = calculateStandardDeviation();
-    specLow = convertAndHandle<double>(row[6]);
-    specHigh = convertAndHandle<double>(row[8]);
-    ctrlLow = convertAndHandle<double>(row[9]);
-    ctrlHigh = convertAndHandle<double>(row[10]);
-    measureTime = row[11];
-    testProg = row[22];
-    lot = row[3];
-    wafer = row[4];
-    keyRoute = lot.substr(0, 5) + row[4] + row[24];
+    specLow = convertAndHandle<double>(row[findValue(titleTest, "SPEC_LOW")]);
+    specHigh = convertAndHandle<double>(row[findValue(titleTest, "SPEC_HIGH")]);
+    ctrlLow = convertAndHandle<double>(row[findValue(titleTest, "CTRL_LOW")]);
+    ctrlHigh = convertAndHandle<double>(row[findValue(titleTest, "CTRL_HIGH")]);
+    measureTime = row[findValue(titleTest, "MEASURE_TIME")];
+    wipmintime = row[findValue(titleTest, "WIP_MVIN_TIME")];
+    lot = row[findValue(titleTest, "LOT")];
+    wafer = row[findValue(titleTest, "WAFER")];
+    wipPU = row[findValue(titleTest, "WIP_PU")];
+    routename = row[findValue(titleTest, "ROUTENAME")];
+    stepname = row[findValue(titleTest, "STEPNAME")];
+    keyRoute = lot.substr(0, 5) + wafer + routename;
+    keyDE = lot + wafer + parameter + routename;
 }
-void WAT::setTValue(const std::vector<std::string> &row)
+void WAT::setFileData(const std::vector<std::string> &row, const std::string &focusitem, std::vector<std::pair<std::string, int>> titleTest)
 {
-    tValue = convertAndHandle<double>(row[13]);
-    bValue = convertAndHandle<double>(row[14]);
-    cValue = convertAndHandle<double>(row[15]);
-    lValue = convertAndHandle<double>(row[16]);
-    rValue = convertAndHandle<double>(row[17]);
-    blValue = convertAndHandle<double>(row[18]);
-    brValue = convertAndHandle<double>(row[19]);
-    tlValue = convertAndHandle<double>(row[20]);
-    trValue = convertAndHandle<double>(row[21]);
-    keyDE = row[3] + row[4];
-    specLow = convertAndHandle<double>(row[6]);
-    specHigh = convertAndHandle<double>(row[8]);
-    measureTime = row[11];
-    testProg = row[22];
-    oosCount = convertAndHandle<int>(row[23]);
-    keyRoute = row[3] + row[4] + row[25];
+    std::cout << "WAT data" << std::endl;
+}
+void WAT::setFileDataInit(const std::vector<std::string> &row, const std::string &focusitem, std::vector<std::pair<std::string, int>> titleTest)
+{
+    std::cout << "WAT set_file_data_init" << std::endl;
 }
 std::string WAT::getKeyDE() const
 {
-    std::string keyD = lot.substr(0, 5) + wafer;
-    return keyD;
+    // std::string keyD = lot.substr(0, 5) + wafer;
+    return keyDE;
 }
 std::string WAT::getTestType() const
 {
@@ -185,7 +178,14 @@ double WAT::calculateStandardDeviation() const
 }
 void writeWATToStream(std::ofstream &os, const WAT &b)
 {
-    os << b.getParameter() << ","
+    os << b.getLot() << ","
+       << b.getWafer() << ","
+       << b.getProduct() << ","
+       << b.getProcessTime() << ","
+       << b.getWipPU() << ","
+       << b.getRoutename() << ","
+       << b.getStepname() << ","
+       << b.getParameter() << ","
        << b.getSpeclow() << ","
        << b.getSpecTarget() << ","
        << b.getSpechigh() << ","
@@ -200,4 +200,59 @@ void writeWATToStream(std::ofstream &os, const WAT &b)
 std::string WAT::getKeyRoute() const
 {
     return keyRoute;
+}
+void WAT::setFileData(const std::vector<std::string> &row, const int &i)
+{
+    if (i == 1)
+    {
+        // 3set cuz 3 platen
+    }
+    else if (i == 2)
+    { // 22
+      // 3set cuz 3 platen
+    }
+    else if (i == 3)
+    {
+        // 3set cuz 3 platen
+    }
+}
+std::string WAT::getkey_Wafer_Routename() const
+{
+    return lot.substr(0, 5) + wafer + routename;
+}
+std::string WAT::getkey_Routename() const
+{
+    return lot.substr(0, 5) + routename;
+}
+std::string WAT::getProduct() const
+{
+    return product;
+}
+std::string WAT::getProcess() const
+{
+    return process;
+}
+std::string WAT::getLot() const
+{
+    return lot;
+}
+std::string WAT::getWafer() const
+{
+    return wafer;
+}
+std::string WAT::getProcessTime() const
+{
+    return wipmintime;
+}
+std::string WAT::getWipPU() const
+{
+    return wipPU;
+}
+std::string WAT::getRoutename() const
+{
+    return routename;
+}
+std::string WAT::getStepname() const
+{
+    return stepname;
 }

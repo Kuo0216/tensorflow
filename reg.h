@@ -1,6 +1,6 @@
 #ifndef REG_H
 #define REG_H
-#include "Eigen/Dense"
+// #include "Eigen/Dense"
 #include <iostream>
 #include <vector>
 double calculateRegressionCoefficient(const std::vector<double> &x, const std::vector<double> &y)
@@ -35,20 +35,20 @@ double calculateRegressionCoefficient(const std::vector<double> &x, const std::v
     double regression_coefficient = numerator / denominator;
     return regression_coefficient;
 }
-double calculateRegressionCoefficient(const Eigen::VectorXd &x, const Eigen::VectorXd &y)
-{
-    Eigen::Index size = x.size();
+// double calculateRegressionCoefficient(const Eigen::VectorXd &x, const Eigen::VectorXd &y)
+// {
+//     Eigen::Index size = x.size();
 
-    // Calculate the mean of x and y
-    double mean_x = x.mean();
-    double mean_y = y.mean();
+//     // Calculate the mean of x and y
+//     double mean_x = x.mean();
+//     double mean_y = y.mean();
 
-    // Calculate the numerator and denominator
-    double numerator = ((x.array() - mean_x) * (y.array() - mean_y)).sum();
-    double denominator = ((x.array() - mean_x) * (x.array() - mean_x)).sum();
+//     // Calculate the numerator and denominator
+//     double numerator = ((x.array() - mean_x) * (y.array() - mean_y)).sum();
+//     double denominator = ((x.array() - mean_x) * (x.array() - mean_x)).sum();
 
-    // Calculate the regression coefficient
-    double regression_coefficient = numerator / denominator;
-    return regression_coefficient;
-}
+//     // Calculate the regression coefficient
+//     double regression_coefficient = numerator / denominator;
+//     return regression_coefficient;
+// }
 #endif
