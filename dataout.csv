@@ -1,0 +1,10 @@
+ID,lot,name,TIME,parameter,
+1,aa,dd,2023/1/1 13:04,value1,1
+1,aa,dd,2023/1/1 13:04,value2,4
+1,aa,dd,2023/1/1 13:04,value3,7
+2,bb,ee,2023/1/1 13:03,value1,2
+2,bb,ee,2023/1/1 13:03,value2,5
+2,bb,ee,2023/1/1 13:03,value3,8
+3,cc,ff,2023/1/1 13:01,value1,3
+3,cc,ff,2023/1/1 13:01,value2,6
+3,cc,ff,2023/1/1 13:01,value3,9
