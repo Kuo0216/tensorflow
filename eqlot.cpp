@@ -69,7 +69,7 @@ Eqlot::Eqlot(const std::vector<std::string> &row, const std::string &focusitem, 
     polishTimevec[2] = polishTime3;
     maxtime = convertAndHandle<double>(row[findValue(titleTest, "maxtime")]);
     mintime = convertAndHandle<double>(row[findValue(titleTest, "mintime")]);
-    keyde = lot + routeName;
+    keyde = lot + routeName + recipe1;
 }
 void Eqlot::setFileData(const std::vector<std::string> &row, const std::string &focusitem, std::vector<std::pair<std::string, int>> titleTest)
 {
@@ -215,5 +215,6 @@ void writeEqlotToStream(std::ofstream &os, const Eqlot &e, const int &unit)
        << e.getPlaten1UsingTime(3) << ","
        << e.getCondUsingTime(1) << ","
        << e.getCondUsingTime(2) << ","
-       << e.getCondUsingTime(3) << ",";
+       << e.getCondUsingTime(3) << ","
+       << e.getMoveOutTime() << ",";
 }

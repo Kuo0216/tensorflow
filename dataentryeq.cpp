@@ -38,7 +38,7 @@ DataEntryEQ::DataEntryEQ(const std::vector<std::string> &row, const std::string 
     head4Rpm = convertAndHandle<double>(row[findValue(titleTest, "HEAD4_RPM")]);
     patenRpm = convertAndHandle<double>(row[findValue(titleTest, "PLATEN_RPM")]); // 40
     slurry1Flow = convertAndHandle<double>(row[findValue(titleTest, "SLURRY1_FLOW")]);
-    keyDE = lot + wafer + routeName;
+    keyDE = lot + wafer + routeName + recipe1;
     if (head1Rpm != 0.0)
     {
         headUnit = 1;
@@ -98,7 +98,7 @@ void DataEntryEQ::setFileData(const std::vector<std::string> &row, const std::st
     retaRingPresvec[i][j] = convertAndHandle<double>(row[findValue(titleTest, "RETA_RING1_PRES") + j]);  // 3set cuz 3 platen;by4
     conHeadPresvec[i] = convertAndHandle<double>(row[findValue(titleTest, "CON_HEAD_PRES")]);            // 3set cuz 3 platen         // 21
     conHeadRpmvec[i] = convertAndHandle<double>(row[findValue(titleTest, "CON_HEAD_PRES")]);             // 3set cuz 3 platen
-    epTimevec[i] = convertAndHandle<double>(row[findValue(titleTest, "EP_TIME1") + i]);
+    epTimevec[i] = convertAndHandle<double>(row[findValue(titleTest, "EP_TIME_1") + i]);
     keyRoute = processUnit + routeName;
 }
 void DataEntryEQ::setFileDataInit(const std::vector<std::string> &row, const std::string &focusitem, std::vector<std::pair<std::string, int>> titleTest)
@@ -113,7 +113,7 @@ void DataEntryEQ::setFileDataInit(const std::vector<std::string> &row, const std
     retaRingPresvec[i][j] = convertAndHandle<double>(row[findValue(titleTest, "RETA_RING1_PRES") + j]);  // 3set cuz 3 platen;by4
     conHeadPresvec[i] = convertAndHandle<double>(row[findValue(titleTest, "CON_HEAD_PRES")]);            // 3set cuz 3 platen         // 21
     conHeadRpmvec[i] = convertAndHandle<double>(row[findValue(titleTest, "CON_HEAD_PRES")]);             // 3set cuz 3 platen
-    epTimevec[i] = convertAndHandle<double>(row[findValue(titleTest, "EP_TIME1") + i]);
+    epTimevec[i] = convertAndHandle<double>(row[findValue(titleTest, "EP_TIME_1") + i]);
     keyRoute = processUnit + routeName;
 } // 3set cuz 3 platen
 size_t DataEntryEQ::size() const

@@ -33,8 +33,7 @@ std::vector<std::tuple<AType, BType, CType, DType>> lookup(
     {
         const std::string &key = pair.second.getkey_Wafer_Routename();
         const std::string &keylotbase = pair.second.getkey_Routename();
-        // const std::string &keyroute = pair.first + pair.second.getwipRounteName();
-        // Check if the key exists in bMap and cMap
+
         if (bMap.find(key) != bMap.end() && cMap.find(key) != cMap.end() && dMap.find(keylotbase) != dMap.end())
         {
             myMergeVec.emplace_back(pair.second, bMap.at(key), cMap.at(key), dMap.at(keylotbase));

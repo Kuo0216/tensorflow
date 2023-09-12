@@ -4,6 +4,8 @@
 #include <vector>
 #include <iostream>
 #include <stdexcept>
+#include <fstream>
+#include <sstream>
 int unitmapValue(int i);
 int findValue(const std::vector<std::pair<std::string, int>> titleTest, const std::string &searchString);
 template <typename T>
@@ -60,4 +62,6 @@ T convertAndHandle(const std::string &value, const std::vector<std::string> &row
     return T(); // Default value for T
 }
 void checkRowSize(const std::vector<std::string> &row, size_t expectedSize);
+void checkfile1(std::ofstream &file);
+
 #endif // DATACHECK_H

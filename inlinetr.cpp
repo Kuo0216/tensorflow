@@ -168,7 +168,7 @@ void InlineTR::setFileDataInit(const std::vector<std::string> &row, const std::s
         inlineTK_Calculate_vec[0][2] = convertAndHandle<double>(row[findValue(titleTest, "AVG_VALUE")]);
         inlineTK_Calculate_vec[0][8] = convertAndHandle<double>(row[findValue(titleTest, "SPEC_HIGH")]); // 3set cuz 3 platen
     }
-    keyRoute = lot.substr(0, 5) + wafer + routeName;
+    keyRoute = lot.substr(0, 5) + wafer + routeName + recipe1;
 }
 size_t InlineTR::size() const
 {
@@ -193,7 +193,7 @@ void writeCMPEQToStream(std::ofstream &os, const InlineTR &d)
 }
 std::string InlineTR::getKeyRouteName() const
 {
-    return lot + routeName;
+    return lot + routeName + recipe1;
 }
 std::string InlineTR::getMoveOutTime() const
 {

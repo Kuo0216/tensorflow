@@ -40,6 +40,7 @@ private:
     std::string routename;
     std::string stepname;
     std::string wipmintime;
+    std::string wiprecipe;
 
 public:
     WAT() {}

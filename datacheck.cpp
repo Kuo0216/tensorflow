@@ -3,6 +3,7 @@
 #include <stdexcept>
 #include <fstream>
 #include <sstream>
+#include <algorithm>
 #include "dataentry.h"
 #include "dataentryeq.h"
 int unitmapValue(int i)
@@ -84,4 +85,18 @@ void extractColumnAndWriteToFile(const std::string &inputFile, const std::string
     // Close the input and output files when done
     inFile.close();
     outFile.close();
+}
+void checkfile1(std::ofstream &file)
+{
+    // Pass an ifstream reference
+    if (file.is_open())
+    {
+        std::cout << "File is open." << std::endl;
+        // Perform any additional checks or operations you need here.
+    }
+    else
+    {
+        std::cout << "File is not open or does not exist." << std::endl;
+        // Handle the case when the file is not open.
+    }
 }

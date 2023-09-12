@@ -33,8 +33,9 @@ WAT::WAT(const std::vector<std::string> &row, const std::string &focusitem, std:
     wipPU = row[findValue(titleTest, "WIP_PU")];
     routename = row[findValue(titleTest, "ROUTENAME")];
     stepname = row[findValue(titleTest, "STEPNAME")];
+    wiprecipe = row[findValue(titleTest, "WIP_RECIPE")];
     keyRoute = lot.substr(0, 5) + wafer + routename;
-    keyDE = lot + wafer + parameter + routename;
+    keyDE = lot + wafer + parameter + routename + wiprecipe;
 }
 void WAT::setFileData(const std::vector<std::string> &row, const std::string &focusitem, std::vector<std::pair<std::string, int>> titleTest)
 {
@@ -218,11 +219,11 @@ void WAT::setFileData(const std::vector<std::string> &row, const int &i)
 }
 std::string WAT::getkey_Wafer_Routename() const
 {
-    return lot.substr(0, 5) + wafer + routename;
+    return lot.substr(0, 5) + wafer + routename + wiprecipe;
 }
 std::string WAT::getkey_Routename() const
 {
-    return lot.substr(0, 5) + routename;
+    return lot.substr(0, 5) + routename + wiprecipe;
 }
 std::string WAT::getProduct() const
 {

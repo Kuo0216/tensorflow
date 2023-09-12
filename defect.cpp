@@ -18,9 +18,9 @@ Defect::Defect(const std::vector<std::string> &row, const std::string &focusitem
     wipRoutendStepvec.push_back(row[findValue(titleTest, "PROCESS_STEP")]);
     wipPUAndRecipevec.push_back(row[findValue(titleTest, "PROCESS_EQ")]);
     wipPUAndRecipevec.push_back(row[findValue(titleTest, "PROCESS_EQ")]);
-    wipPUAndRecipevec.push_back(row[findValue(titleTest, "RECIPE")]);
+    wipPUAndRecipevec.push_back(row[findValue(titleTest, "WIP_RECIPE")]);
     wipPUAndRecipevec.push_back(row[findValue(titleTest, "LOT_TYPE")]);
-    keyDE = lot + wafer + wipRoutendStepvec[1];
+    keyDE = lot + wafer + wipRoutendStepvec[1] + wipPUAndRecipevec[2];
     defect_count = convertAndHandle<double>(row[findValue(titleTest, "DEFECT_COUNT")]);
 }
 void Defect::setFileData(const std::vector<std::string> &row, const std::string &focusitem, std::vector<std::pair<std::string, int>> titleTest) {}
@@ -82,5 +82,5 @@ void Defect::setExp()
 }
 std::string Defect::getKeyRouteName() const
 {
-    return lot.substr(0, 5) + wipRoutendStepvec[1];
+    return lot.substr(0, 5) + wipRoutendStepvec[1] + wipPUAndRecipevec[2];
 }
