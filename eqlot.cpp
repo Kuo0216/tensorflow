@@ -5,71 +5,78 @@
 #include <iostream>
 #include <stdexcept>
 #include "eqlot.h"
-
 Eqlot::Eqlot(const std::vector<std::string> &row, const std::string &focusitem, std::vector<std::pair<std::string, int>> titleTest) : moveInWaferCount(0.0), moveOutWaferCount(0.0),
                                                                                                                                       diffMaxMin(0.0), head1Usage(0.0), head2Usage(0.0), head3Usage(0.0), head4Usage(0.0),
-                                                                                                                                      pat1UsingTime(0.0), polishTime1(0.0),
-                                                                                                                                      headUnit(0), headUsageAndTimevec(2, std::vector<double>(4, 0.0)), polishTimevec(3, 0.0), platvec(2, std::vector<double>(3, 0.0))
+                                                                                                                                      pat1UsingTime(0.0), polishTime1(0.0), polishTime2(0.0), polishTime3(0.0),
+                                                                                                                                      headUnit(0), headUsageAndTimevec(2, std::vector<double>(4, 0.0)), polishTimevec(3, 0.0), platvec(2, std::vector<double>(3, 0.0)), maxtime(0.0), mintime(0.0)
 {
     lot = row[findValue(titleTest, "LOT")];
     lotJobSequence = row[findValue(titleTest, "LOTJOBSEQUENCE")];
-    chamber = row[findValue(titleTest, "CHAMBER")];
-    recipeStep = row[findValue(titleTest, "RECIPE_STEP")];
+    run = row[findValue(titleTest, "RUN")];
     product = row[findValue(titleTest, "PRODUCT")];
     process = row[findValue(titleTest, "PROCESS")];
     puType = row[findValue(titleTest, "PUTYPE")];
     routeName = row[findValue(titleTest, "ROUTENAME")];
     stepName = row[findValue(titleTest, "STEPNAME")];
     processUnit = row[findValue(titleTest, "PROCESSINGUNIT")];
-    puFamily = row[findValue(titleTest, "PUFAMILY")];
     area = row[findValue(titleTest, "AREA")];
     recipe1 = row[findValue(titleTest, "RECIPE1")];
     moveInTime = row[findValue(titleTest, "MOVE_IN_TIME")];
     moveOutTime = row[findValue(titleTest, "MOVE_OUT_TIME")];
-    run = row[findValue(titleTest, "RUN")];
-    moveInWaferCount = convertAndHandle<double>(row[findValue(titleTest, "MOVE_IN_WAFER_COUNT")]);   // 17
-    moveOutWaferCount = convertAndHandle<double>(row[findValue(titleTest, "MOVE_OUT_WAFER_COUNT")]); // 18
-    diffMaxMin = convertAndHandle<double>(row[findValue(titleTest, "Diff_MaxMin")]);
-    head1Usage = convertAndHandle<double>(row[findValue(titleTest, "HEAD1USAGE")]); // 28
-    head1usintime = convertAndHandle<double>(row[findValue(titleTest, "HEAD1USINTIME")]);
-    head2Usage = convertAndHandle<double>(row[findValue(titleTest, "HEAD2USAGE")]);
-    head2usintime = convertAndHandle<double>(row[findValue(titleTest, "HEAD2USINTIME")]);
-    head3Usage = convertAndHandle<double>(row[findValue(titleTest, "HEAD3USAGE")]);
-    head3usintime = convertAndHandle<double>(row[findValue(titleTest, "HEAD3USINTIME")]);
-    head4Usage = convertAndHandle<double>(row[findValue(titleTest, "HEAD4USAGE")]);
-    head4usintime = convertAndHandle<double>(row[findValue(titleTest, "HEAD4USINTIME")]);
-    headUsageAndTimevec[0][0] = convertAndHandle<double>(row[findValue(titleTest, "HEAD1USINTIME")]);
-    headUsageAndTimevec[1][0] = head1Usage;
-    headUsageAndTimevec[0][1] = convertAndHandle<double>(row[findValue(titleTest, "HEAD2USINTIME")]);
-    headUsageAndTimevec[1][1] = head2Usage;
-    headUsageAndTimevec[0][2] = convertAndHandle<double>(row[findValue(titleTest, "HEAD3USINTIME")]);
-    headUsageAndTimevec[1][2] = head3Usage;
-    headUsageAndTimevec[0][3] = convertAndHandle<double>(row[findValue(titleTest, "HEAD4USINTIME")]);
-    headUsageAndTimevec[1][3] = head4Usage;
-    pat1UsingTime = convertAndHandle<double>(row[findValue(titleTest, "PLAT1USINTIME")]); // 40
-    plat1usage = convertAndHandle<double>(row[findValue(titleTest, "PLAT1USAGE")]);
-    pat2UsingTime = convertAndHandle<double>(row[findValue(titleTest, "PLAT2USINTIME")]); // 40
-    plat2usage = convertAndHandle<double>(row[findValue(titleTest, "PLAT2USAGE")]);
-    pat3UsingTime = convertAndHandle<double>(row[findValue(titleTest, "PLAT3USINTIME")]); // 40
-    plat3usage = convertAndHandle<double>(row[findValue(titleTest, "PLAT3USAGE")]);
-    condition1usingtime = convertAndHandle<double>(row[findValue(titleTest, "PADCOND1USAGE")]);
-    condition2usingtime = convertAndHandle<double>(row[findValue(titleTest, "PADCOND2USAGE")]);
-    condition3usingtime = convertAndHandle<double>(row[findValue(titleTest, "PADCOND3USAGE")]);
-    platvec[0][0] = plat1usage;
-    platvec[0][1] = plat2usage;
-    platvec[0][2] = plat3usage;
-    platvec[1][0] = pat1UsingTime;
-    platvec[1][1] = pat2UsingTime;
-    platvec[1][2] = pat3UsingTime;
-    polishTime1 = convertAndHandle<double>(row[findValue(titleTest, "POLISH_TIME1")]);
-    polishTime2 = convertAndHandle<double>(row[findValue(titleTest, "POLISH_TIME2")]);
-    polishTime3 = convertAndHandle<double>(row[findValue(titleTest, "POLISH_TIME3")]);
-    polishTimevec[0] = polishTime1;
-    polishTimevec[1] = polishTime2;
-    polishTimevec[2] = polishTime3;
-    maxtime = convertAndHandle<double>(row[findValue(titleTest, "maxtime")]);
-    mintime = convertAndHandle<double>(row[findValue(titleTest, "mintime")]);
-    keyde = lot + routeName + recipe1;
+    isrework = row[findValue(titleTest, "ISREWORK")];
+    puFamily = row[findValue(titleTest, "PUFAMILY")];
+    moveInWaferCount = convertAndHandle<double>(row[findValue(titleTest, "MOVE_IN_WAFER_COUNT")], defaultDouble);   // 17
+    moveOutWaferCount = convertAndHandle<double>(row[findValue(titleTest, "MOVE_OUT_WAFER_COUNT")], defaultDouble); // 18
+    if (run == "-1")
+    {
+        diffMaxMin = convertAndHandle<double>(row[findValue(titleTest, "Diff_MaxMin")], defaultDouble, row);
+        head1Usage = convertAndHandle<double>(row[findValue(titleTest, "HEAD1USAGE")], defaultDouble, row); // 28
+        head1usintime = convertAndHandle<double>(row[findValue(titleTest, "HEAD1USINTIME")], defaultDouble, row);
+        head2Usage = convertAndHandle<double>(row[findValue(titleTest, "HEAD2USAGE")]);
+        head2usintime = convertAndHandle<double>(row[findValue(titleTest, "HEAD2USINTIME")], defaultDouble, row);
+        head3Usage = convertAndHandle<double>(row[findValue(titleTest, "HEAD3USAGE")]);
+        head3usintime = convertAndHandle<double>(row[findValue(titleTest, "HEAD3USINTIME")], defaultDouble, row);
+        head4Usage = convertAndHandle<double>(row[findValue(titleTest, "HEAD4USAGE")]);
+        head4usintime = convertAndHandle<double>(row[findValue(titleTest, "HEAD4USINTIME")], defaultDouble, row);
+        headUsageAndTimevec[0][0] = convertAndHandle<double>(row[findValue(titleTest, "HEAD1USINTIME")], defaultDouble, row);
+        headUsageAndTimevec[1][0] = head1Usage;
+        headUsageAndTimevec[0][1] = convertAndHandle<double>(row[findValue(titleTest, "HEAD2USINTIME")], defaultDouble, row);
+        headUsageAndTimevec[1][1] = head2Usage;
+        headUsageAndTimevec[0][2] = convertAndHandle<double>(row[findValue(titleTest, "HEAD3USINTIME")], defaultDouble, row);
+        headUsageAndTimevec[1][2] = head3Usage;
+        headUsageAndTimevec[0][3] = convertAndHandle<double>(row[findValue(titleTest, "HEAD4USINTIME")], defaultDouble, row);
+        headUsageAndTimevec[1][3] = head4Usage;
+        pat1UsingTime = convertAndHandle<double>(row[findValue(titleTest, "PLAT1USINTIME")], defaultDouble, row); // 40
+        plat1usage = convertAndHandle<double>(row[findValue(titleTest, "PLAT1USAGE")], defaultDouble, row);
+        pat2UsingTime = convertAndHandle<double>(row[findValue(titleTest, "PLAT2USINTIME")], defaultDouble, row); // 40
+        plat2usage = convertAndHandle<double>(row[findValue(titleTest, "PLAT2USAGE")], defaultDouble, row);
+        pat3UsingTime = convertAndHandle<double>(row[findValue(titleTest, "PLAT3USINTIME")], defaultDouble, row); // 40
+        plat3usage = convertAndHandle<double>(row[findValue(titleTest, "PLAT3USAGE")], defaultDouble, row);
+        condition1usingtime = convertAndHandle<double>(row[findValue(titleTest, "PADCOND1USAGE")], defaultDouble, row);
+        condition2usingtime = convertAndHandle<double>(row[findValue(titleTest, "PADCOND2USAGE")], defaultDouble, row);
+        condition3usingtime = convertAndHandle<double>(row[findValue(titleTest, "PADCOND3USAGE")], defaultDouble, row);
+        platvec[0][0] = plat1usage;
+        platvec[0][1] = plat2usage;
+        platvec[0][2] = plat3usage;
+        platvec[1][0] = pat1UsingTime;
+        platvec[1][1] = pat2UsingTime;
+        platvec[1][2] = pat3UsingTime;
+        maxtime = convertAndHandle<double>(row[findValue(titleTest, "maxtime")], defaultDouble, row, "maxtime");
+
+        mintime = convertAndHandle<double>(row[findValue(titleTest, "mintime")], defaultDouble, row, "mintime");
+    }
+    if (run == "0")
+    {
+        recipeStep = row[findValue(titleTest, "RECIPE_STEP")];
+        chamber = row[findValue(titleTest, "CHAMBER")];
+        headstatus = row[findValue(titleTest, "HEADSTATUS")];
+        polishTime1 = convertAndHandle<double>(row[findValue(titleTest, "POLISH_TIME1")], defaultDouble, row);
+        polishTime2 = convertAndHandle<double>(row[findValue(titleTest, "POLISH_TIME2")], defaultDouble, row);
+        polishTime3 = convertAndHandle<double>(row[findValue(titleTest, "POLISH_TIME3")], defaultDouble, row);
+        polishTimevec[0] = polishTime1;
+        polishTimevec[1] = polishTime2;
+        polishTimevec[2] = polishTime3;
+    }
 }
 void Eqlot::setFileData(const std::vector<std::string> &row, const std::string &focusitem, std::vector<std::pair<std::string, int>> titleTest)
 {
@@ -78,19 +85,55 @@ void Eqlot::setFileData(const std::vector<std::string> &row, const std::string &
     if (chNostring == "0")
     {
         headstatus = row[findValue(titleTest, "HEADSTATUS")];
-        polishTime1 = convertAndHandle<double>(row[findValue(titleTest, "POLISH_TIME1")]);
-        polishTime2 = convertAndHandle<double>(row[findValue(titleTest, "POLISH_TIME2")]);
+        polishTime1 = convertAndHandle<double>(row[findValue(titleTest, "POLISH_TIME1")], defaultDouble, row);
+        polishTime2 = convertAndHandle<double>(row[findValue(titleTest, "POLISH_TIME2")], defaultDouble, row);
+        polishTime3 = convertAndHandle<double>(row[findValue(titleTest, "POLISH_TIME3")], defaultDouble, row);
+    }
+    else if (chNostring == "-1")
+    {
+        diffMaxMin = convertAndHandle<double>(row[findValue(titleTest, "Diff_MaxMin")], defaultDouble, row);
+        head1Usage = convertAndHandle<double>(row[findValue(titleTest, "HEAD1USAGE")], defaultDouble, row); // 28
+        head1usintime = convertAndHandle<double>(row[findValue(titleTest, "HEAD1USINTIME")], defaultDouble, row);
+        head2Usage = convertAndHandle<double>(row[findValue(titleTest, "HEAD2USAGE")]);
+        head2usintime = convertAndHandle<double>(row[findValue(titleTest, "HEAD2USINTIME")], defaultDouble, row);
+        head3Usage = convertAndHandle<double>(row[findValue(titleTest, "HEAD3USAGE")]);
+        head3usintime = convertAndHandle<double>(row[findValue(titleTest, "HEAD3USINTIME")], defaultDouble, row);
+        head4Usage = convertAndHandle<double>(row[findValue(titleTest, "HEAD4USAGE")]);
+        head4usintime = convertAndHandle<double>(row[findValue(titleTest, "HEAD4USINTIME")], defaultDouble, row);
+        headUsageAndTimevec[0][0] = convertAndHandle<double>(row[findValue(titleTest, "HEAD1USINTIME")], defaultDouble, row);
+        headUsageAndTimevec[1][0] = head1Usage;
+        headUsageAndTimevec[0][1] = convertAndHandle<double>(row[findValue(titleTest, "HEAD2USINTIME")], defaultDouble, row);
+        headUsageAndTimevec[1][1] = head2Usage;
+        headUsageAndTimevec[0][2] = convertAndHandle<double>(row[findValue(titleTest, "HEAD3USINTIME")], defaultDouble, row);
+        headUsageAndTimevec[1][2] = head3Usage;
+        headUsageAndTimevec[0][3] = convertAndHandle<double>(row[findValue(titleTest, "HEAD4USINTIME")], defaultDouble, row);
+        headUsageAndTimevec[1][3] = head4Usage;
+        pat1UsingTime = convertAndHandle<double>(row[findValue(titleTest, "PLAT1USINTIME")], defaultDouble, row); // 40
+        plat1usage = convertAndHandle<double>(row[findValue(titleTest, "PLAT1USAGE")], defaultDouble, row);
+        pat2UsingTime = convertAndHandle<double>(row[findValue(titleTest, "PLAT2USINTIME")], defaultDouble, row); // 40
+        plat2usage = convertAndHandle<double>(row[findValue(titleTest, "PLAT2USAGE")], defaultDouble, row);
+        pat3UsingTime = convertAndHandle<double>(row[findValue(titleTest, "PLAT3USINTIME")], defaultDouble, row); // 40
+        plat3usage = convertAndHandle<double>(row[findValue(titleTest, "PLAT3USAGE")], defaultDouble, row);
+        condition1usingtime = convertAndHandle<double>(row[findValue(titleTest, "PADCOND1USAGE")], defaultDouble, row);
+        condition2usingtime = convertAndHandle<double>(row[findValue(titleTest, "PADCOND2USAGE")], defaultDouble, row);
+        condition3usingtime = convertAndHandle<double>(row[findValue(titleTest, "PADCOND3USAGE")], defaultDouble, row);
+        platvec[0][0] = plat1usage;
+        platvec[0][1] = plat2usage;
+        platvec[0][2] = plat3usage;
+        platvec[1][0] = pat1UsingTime;
+        platvec[1][1] = pat2UsingTime;
+        platvec[1][2] = pat3UsingTime;
+        maxtime = convertAndHandle<double>(row[findValue(titleTest, "maxtime")], defaultDouble, row);
+        mintime = convertAndHandle<double>(row[findValue(titleTest, "mintime")], defaultDouble, row);
     }
 }
-
 size_t DataEntry::size() const
 {
     return 45;
 }
-
 std::string Eqlot::getKeyDE() const
 {
-    return keyde;
+    return lot + routeName + recipe1;
 }
 double Eqlot::getEpTime(const int &platen) const
 {
@@ -98,10 +141,10 @@ double Eqlot::getEpTime(const int &platen) const
     int k = unitmapValue(platen);
     return polishTimevec[0];
 }
-std::string Eqlot::getKeyRoute() const
-{
-    return keyRoute;
-}
+// std::string Eqlot::getKeyRoute() const
+// {
+//     return keyRoute;
+// }
 double Eqlot::getSlurryFlow() const
 {
     return polishTime1;
@@ -110,10 +153,10 @@ std::string Eqlot::getMoveOutTime() const
 {
     return moveOutTime;
 }
-std::string Eqlot::getKeyEQ_Route_PU_MoveOut() const
-{
-    return lot.substr(0, 5) + routeName + processUnit + moveOutTime;
-}
+// std::string Eqlot::getKeyEQ_Route_PU_MoveOut() const
+// {
+//     return lot.substr(0, 5) + routeName + processUnit + moveOutTime;
+// }
 double Eqlot::getHeadUsage(const int &unit) const
 {
     switch (unit)
@@ -217,4 +260,24 @@ void writeEqlotToStream(std::ofstream &os, const Eqlot &e, const int &unit)
        << e.getCondUsingTime(2) << ","
        << e.getCondUsingTime(3) << ","
        << e.getMoveOutTime() << ",";
+}
+std::string Eqlot::getKeyDE(const int &i) const
+{
+    if (i == 1)
+    {
+        return lot.substr(0, 5) + routeName + processUnit;
+    }
+    else if (i == 2)
+    {
+        return lot + routeName + recipe1 + moveOutTime;
+    }
+
+    else if (i == 3)
+    {
+        return lot.substr(0, 5) + routeName + recipe1;
+    }
+    else
+    {
+        return lot + routeName + recipe1;
+    }
 }

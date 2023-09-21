@@ -32,7 +32,7 @@ private:
     double ctrlHigh;
     std::string measureTime;
     std::string testType;
-    std::string keyDE;
+    // std::string keyDE;
     std::string lot;
     std::string wafer;
     std::string keyRoute;
@@ -41,12 +41,17 @@ private:
     std::string stepname;
     std::string wipmintime;
     std::string wiprecipe;
+    bool condition = false;
 
 public:
     WAT() {}
+    void setEXP();
     std::string getKeyDE() const;
+    std::string getKeyDE(const int &i) const;
     std::string getkey_Wafer_Routename() const;
+    std::string getkey_Wafer_Routename(const int &i) const;
     std::string getkey_Routename() const;
+    std::string getkey_Routename(const int &i) const;
     WAT(const std::vector<std::string> &row);
     WAT(const std::vector<std::string> &row, const std::string &focusitem, std::vector<std::pair<std::string, int>> titleTest);
     void setTValue(const std::vector<std::string> &row);
@@ -75,7 +80,7 @@ public:
     std::string gettestProg() const;
     std::string getTestType() const;
     int getoosCount() const;
-    std::string getKeyRoute() const;
+    // std::string getKeyRoute() const;
     std::string getProduct() const;
     std::string getProcess() const;
     std::string getLot() const;
@@ -84,5 +89,6 @@ public:
     std::string getRoutename() const;
     std::string getStepname() const;
     friend void writeWATToStream(std::ofstream &os, const WAT &a);
+    friend void writeBasicToStream(std::ofstream &os, const WAT &a);
 };
 #endif

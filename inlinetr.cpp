@@ -4,57 +4,7 @@
 #include <string>
 #include <iostream>
 #include <stdexcept>
-// InlineTR::InlineTR(const std::vector<std::string> &row)
-//     : inline_TKvec(1, std::vector<double>(9, 0.0)), inlineTK_Calculate_vec(1, std::vector<double>(9, 0.0))
-// {
-//     checkRowSize(row, 45);
-//     lot = row[0];
-//     wafer = row[2];
-//     parameter = row[9];
-//     route = row[4];
-//     product = row[5]; // done
-//     process = row[3]; // done
-//     step = row[7];
-//     routeName = row[6];    // done
-//     stepName = row[8];     // done
-//     processUnit = row[14]; // done
-//     measDate = row[11];
-//     recipe1 = row[35]; // done
-//     measPU = row[15];
-//     moveOutTime = row[12];     // done                                                                          // 20
-//     moveOutOperator = row[34]; // done
-//     keyDE = lot.substr(0, 5) + wafer + routeName + processUnit + moveOutTime;
-//     keyRoute = lot.substr(0, 5) + wafer + routeName; // 3set cuz 3 platen
-// }
-// InlineTR &InlineTR::setFileData(const std::vector<std::string> &row)
-// {
-//     if (row[9] == "F-RNG")
-//     {
-//         inlineTK_Calculate_vec[0][9] = convertAndHandle<double>(row[16]); // 3set cuz 3 platen;by4
-//     }
-//     else if (row[9] == "TK-GOOD")
-//     { // 22
-//         for (int j = 0; j < 9; j++)
-//         {
-//             inline_TKvec[0][j] = convertAndHandle<double>(row[21 + j]);
-//         }
-//         inlineTK_Calculate_vec[0][0] = convertAndHandle<double>(row[16]);
-//         inlineTK_Calculate_vec[0][2] = convertAndHandle<double>(row[19]);
-//         inlineTK_Calculate_vec[0][1] = convertAndHandle<double>(row[20]);
-//         inlineTK_Calculate_vec[0][3] = convertAndHandle<double>(row[17]);
-//         inlineTK_Calculate_vec[0][4] = convertAndHandle<double>(row[18]);
-//         inlineTK_Calculate_vec[0][5] = convertAndHandle<double>(row[31]);
-//         inlineTK_Calculate_vec[0][6] = convertAndHandle<double>(row[32]);
-//         inlineTK_Calculate_vec[0][7] = 0.5 * (inlineTK_Calculate_vec[0][5] + inlineTK_Calculate_vec[0][6]); // 3set cuz 3 platen;by4
-//                                                                                                             // 3set cuz 3 platen
-//     }
-//     else if (row[9] == "TK-GOOD-RANGE")
-//     {
-//         inlineTK_Calculate_vec[0][8] = convertAndHandle<double>(row[31]); // 3set cuz 3 platen
-//     }
-//     keyRoute = lot.substr(0, 5) + wafer + routeName;
-//     return *this;
-// }
+
 InlineTR::InlineTR(const std::vector<std::string> &row, const std::string &focusitem, std::vector<std::pair<std::string, int>> titleTest) : inline_TKvec(1, std::vector<double>(9, 0.0)), inlineTK_Calculate_vec(1, std::vector<double>(10, 0.0))
 {
     lot = row[findValue(titleTest, "LOT")];
@@ -72,38 +22,9 @@ InlineTR::InlineTR(const std::vector<std::string> &row, const std::string &focus
     measPU = row[findValue(titleTest, "MEASURE_EQ")];
     moveOutTime = row[findValue(titleTest, "PROCESS_TIME")]; // done                                                                          // 20
     moveOutOperator = row[findValue(titleTest, "OPERATOR")]; // donePROCESS_TIME
-    keyDE = lot.substr(0, 5) + wafer + routeName + processUnit + moveOutTime;
-    keyRoute = lot.substr(0, 5) + wafer + processUnit + routeName + moveOutTime; // 3set cuz 3 platen
     setFileDataInit(row, parameter, titleTest);
 }
-void InlineTR::setFileData(const std::vector<std::string> &row, const int &i)
-{
-    if (row[i] == "F-RNG")
-    {
-        inlineTK_Calculate_vec[0][9] = convertAndHandle<double>(row[16]); // 3set cuz 3 platen;by4
-    }
-    else if (row[i] == "TK-GOOD")
-    { // 22
-        for (int j = 0; j < i; j++)
-        {
-            inline_TKvec[0][j] = convertAndHandle<double>(row[21 + j]);
-        }
-        inlineTK_Calculate_vec[0][0] = convertAndHandle<double>(row[16]);
-        inlineTK_Calculate_vec[0][2] = convertAndHandle<double>(row[19]);
-        inlineTK_Calculate_vec[0][1] = convertAndHandle<double>(row[20]);
-        inlineTK_Calculate_vec[0][3] = convertAndHandle<double>(row[17]);
-        inlineTK_Calculate_vec[0][4] = convertAndHandle<double>(row[18]);
-        inlineTK_Calculate_vec[0][5] = convertAndHandle<double>(row[31]);
-        inlineTK_Calculate_vec[0][6] = convertAndHandle<double>(row[32]);
-        inlineTK_Calculate_vec[0][7] = 0.5 * (inlineTK_Calculate_vec[0][5] + inlineTK_Calculate_vec[0][6]); // 3set cuz 3 platen;by4
-                                                                                                            // 3set cuz 3 platen
-    }
-    else if (row[i] == "TK-GOOD-RANGE")
-    {
-        inlineTK_Calculate_vec[0][8] = convertAndHandle<double>(row[31]); // 3set cuz 3 platen
-    }
-    keyRoute = lot.substr(0, 5) + wafer + routeName;
-}
+
 void InlineTR::setFileData(const std::vector<std::string> &row, const std::string &focusitem, std::vector<std::pair<std::string, int>> titleTest)
 {
     if (row[findValue(titleTest, focusitem)] == "F-RNG")
@@ -135,7 +56,6 @@ void InlineTR::setFileData(const std::vector<std::string> &row, const std::strin
         inlineTK_Calculate_vec[0][1] = convertAndHandle<double>(row[findValue(titleTest, "AVG_VALUE")]);
         inlineTK_Calculate_vec[0][8] = convertAndHandle<double>(row[findValue(titleTest, "SPEC_HIGH")]); // 3set cuz 3 platen
     }
-    keyRoute = lot.substr(0, 5) + wafer + routeName;
 }
 void InlineTR::setFileDataInit(const std::vector<std::string> &row, const std::string &focusitem, std::vector<std::pair<std::string, int>> titleTest)
 {
@@ -168,7 +88,6 @@ void InlineTR::setFileDataInit(const std::vector<std::string> &row, const std::s
         inlineTK_Calculate_vec[0][2] = convertAndHandle<double>(row[findValue(titleTest, "AVG_VALUE")]);
         inlineTK_Calculate_vec[0][8] = convertAndHandle<double>(row[findValue(titleTest, "SPEC_HIGH")]); // 3set cuz 3 platen
     }
-    keyRoute = lot.substr(0, 5) + wafer + routeName + recipe1;
 }
 size_t InlineTR::size() const
 {
@@ -176,7 +95,26 @@ size_t InlineTR::size() const
 }
 std::string InlineTR::getKeyDE() const
 {
-    return keyRoute;
+    return lot.substr(0, 5) + wafer + routeName + recipe1;
+}
+std::string InlineTR::getKeyDE(const int &i) const
+{
+    if (i == 1)
+    {
+        return lot.substr(0, 5) + wafer + routeName + processUnit;
+    }
+    else if (i == 2)
+    {
+        return lot.substr(0, 5) + wafer + routeName + recipe1 + moveOutTime;
+    }
+    else if (i == 3)
+    {
+        return lot.substr(0, 5) + wafer + routeName + recipe1;
+    }
+    else
+    {
+        return lot.substr(0, 5) + wafer + routeName + recipe1;
+    }
 }
 std::vector<std::vector<double>> InlineTR::getInlineTKvec() const
 {
@@ -195,13 +133,24 @@ std::string InlineTR::getKeyRouteName() const
 {
     return lot + routeName + recipe1;
 }
+std::string InlineTR::getKeyRouteName(const int &i) const
+{
+    if (i == 2)
+    {
+        return lot + routeName + recipe1 + moveOutTime;
+    }
+    else if (i == 1)
+    {
+        return lot + routeName + recipe1;
+    }
+    else
+    {
+        return lot + routeName + recipe1;
+    }
+}
 std::string InlineTR::getMoveOutTime() const
 {
     return moveOutTime;
-}
-std::string InlineTR::getKeyEQ_Route_PU_MoveOut() const
-{
-    return lot.substr(0, 5) + wafer + routeName + processUnit + moveOutTime;
 }
 std::string InlineTR::getParameter() const
 {
@@ -210,6 +159,10 @@ std::string InlineTR::getParameter() const
 std::string InlineTR::getKeyWafer() const
 {
     return lot.substr(0, 5) + wafer;
+}
+std::string InlineTR::getRecipe() const
+{
+    return recipe1;
 }
 void writeInlineToStream(std::ofstream &os, const InlineTR &d)
 {
@@ -224,13 +177,43 @@ void writeInlineToStream(std::ofstream &os, const InlineTR &d)
        << d.getInlineTKvec()[0][5] << ","
        << d.getInlineTKvec()[0][6] << ","
        << d.getInlineTKvec()[0][7] << ","
-       << d.getInlineTKvec()[0][8] << ",";
+       << d.getInlineTKvec()[0][8] << ","
+       << d.getInlineTK_Calculate_vec()[0][4] << ","
+       << d.getInlineTK_Calculate_vec()[0][5] << ","
+       << d.getInlineTK_Calculate_vec()[0][6] << ",";
+}
+void writeBasicToStream(std::ofstream &os, const InlineTR &a)
+{
+    os << a.getLot() << ","
+       << a.getWafer() << ","
+       << a.getProduct() << ","
+       << a.getProcess() << ","
+       << a.getMoveOutTime() << ","
+       << a.getProcessPU() << ","
+       << a.getRouteName() << ","
+       << a.getRecipe() << ","
+       << a.getInlineTK_Calculate_vec()[0][0] << ","
+       << a.getInlineTK_Calculate_vec()[0][1] << ","
+       << a.getInlineTK_Calculate_vec()[0][2] << ","
+       << a.getInlineTKvec()[0][0] << ","
+       << a.getInlineTKvec()[0][1] << ","
+       << a.getInlineTKvec()[0][2] << ","
+       << a.getInlineTKvec()[0][3] << ","
+       << a.getInlineTKvec()[0][4] << ","
+       << a.getInlineTKvec()[0][5] << ","
+       << a.getInlineTKvec()[0][6] << ","
+       << a.getInlineTKvec()[0][7] << ","
+       << a.getInlineTKvec()[0][8] << ","
+       << a.getInlineTK_Calculate_vec()[0][4] << ","
+       << a.getInlineTK_Calculate_vec()[0][5] << ","
+       << a.getInlineTK_Calculate_vec()[0][6] << ",";
 }
 std::string InlineTR::getLot() const { return lot; }
 std::string InlineTR::getWafer() const { return wafer; }
 std::string InlineTR::getProduct() const { return product; }
 std::string InlineTR::getProcess() const { return process; }
 std::string InlineTR::getRouteName() const { return routeName; }
+std::string InlineTR::getStepName() const { return stepName; };
 std::string InlineTR::getProcessPU() const { return processUnit; }
 void writeInlineToStream3(std::ofstream &os, const InlineTR &d)
 {

@@ -17,7 +17,7 @@ int unitmapValue(int i)
     else if (i == 4)
         return 3;
     else
-        return -1;
+        return 4;
 }
 int findValue(const std::vector<std::pair<std::string, int>> titleTest, const std::string &searchString)
 {

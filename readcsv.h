@@ -40,12 +40,10 @@ static std::unordered_map<std::string, bool> existMap{
     {"DEFECT", false},
     {"EQ_LOT", false},
     {"EQ_CMP", false}};
-
 void setCaseType(const std::string &key, bool value)
 {
     // Check if the key exists in the map
     auto it = existMap.find(key);
-
     // If the key exists, update its value
     if (it != existMap.end())
     {
@@ -188,6 +186,202 @@ std::vector<T> readCSV(const std::string &filePath, std::unordered_map<std::stri
     // std::cout << "size of pushing vector (containing repeated) is\t " << theFileCurrentvec.size() << '\n';
     handle_sort_remove_unique(theFileCurrentvec);
     std::cout << "Handling the title (sorting and removing)" << '\n';
+    while (std::getline(file, line))
+    {
+        std::stringstream ss(line);
+        std::string cell;
+        std::vector<std::string> row;
+        std::vector<std::string> reductin_row;
+        std::vector<std::pair<std::string, int>> titleTest(theFileCurrentvec);
+        unsigned j = 0;
+        unsigned k = 0;
+        while (std::getline(ss, cell, ','))
+        {
+            handleString(cell);
+            if (k == j)
+            {
+                reductin_row.push_back(cell);
+                titleTest.erase(titleTest.begin());
+                j = titleTest.begin()->second;
+                k++;
+            }
+            else
+            {
+                k++;
+            }
+            row.push_back(cell);
+        }
+        if (!UEDA_MaP[fileTypeTest].empty())
+        {
+            T entry(row, UEDA_MaP[fileTypeTest], theFileCurrentvec);
+            std::string hashkey = entry.getKeyDE();
+            auto it = entryMap.find(hashkey);
+            if (it != entryMap.end())
+            {
+                // std::cout << hashkey << "\t"
+                //           << "Updating\t" << fileTypeTest << "in the file\t" << filePath << "\twatch column : " << UEDA_MaP[fileTypeTest] << '\n';
+                it->second.setFileData(row, UEDA_MaP[fileTypeTest], theFileCurrentvec);
+            }
+            else
+            {
+                entryMap[hashkey] = entry;
+            }
+            entryvec.push_back(entry);
+        }
+    }
+    file.close();
+    return entryvec;
+}
+static std::vector<std::string> pTitlevecwat{"LOT", "Wafer", "Product", "WAT_Average", "Inline_TK_avg"};
+static std::vector<std::string> pTitlevecinline{"LOT", "Wafer", "Product", "TK Average", "P1 padlife"};
+static std::vector<std::string> pTitlevecdefect{"LOT", "Wafer", "Product", "DC Average", "P1 padlife"};
+void readMonitorTitle(const std::vector<std::string> &pTitlevec)
+{
+    for (const auto &elem : pTitlevec)
+    {
+        if (elem == *pTitlevec.cbegin())
+        {
+            std::cout << elem;
+        }
+        else
+        {
+            std::cout << "\t" << elem;
+        }
+    }
+    std::cout << '\n';
+    std::cout << "=================================================================" << '\n';
+}
+void writeFile(std::ofstream &ofstream, std::vector<std::tuple<InlineTR, DataEntryEQ, Eqlot>> &mergedData3)
+{
+    ofstream << "LOT,WAFER,PROCWSS,PRODUCT,ROUTENAME,PROCESS_PU,Inline_TK_Average,Inline_Range,Inline_TK_STDEV,M1,M2,M3,M4,M5,M6,M7,M8,M9,HEAD_UNIT,HEAD_RPM,Innertube,Membrane,RetRing,Head_RPM_P2,Innertube_P2,Membrane_P2,Retring_P2,HEAD_RPM_P3,Innertube_P3,Membrane_P3,Retring_P3,EP_TIME1,EP_TIME2,EP_TIME3,CON1_HEAD_PRES,CON1_HEAD_RPM,CON2_HEAD_PRES,CON2_HEAD_RPM,CON3_HEAD_PRES,CON3_HEAD_RPM,Slurry1Flow,Headusage,Pad1_life,Pad2_life,Pad3_life,Condition_1,Condition_2,Condition_3,Moveout_Time\n";
+    for (const auto &tuple : mergedData3)
+    {
+        const InlineTR &a = std::get<0>(tuple);
+        const DataEntryEQ &b = std::get<1>(tuple);
+        const Eqlot &c = std::get<2>(tuple);
+        writeInlineToStream3(ofstream, a);
+        writeCMPEQToStream(ofstream, b);
+        int unit = b.getHeadUnit();
+        writeEqlotToStream(ofstream, c, unit);
+        ofstream << '\n';
+        std::cout << a.getLot() << "\t|" << a.getWafer() << "\t|" << a.getProduct() << "\t|" << a.getInlineTK_Calculate_vec()[0][0] << "\t\t|" << c.getPlaten1UsingTime(1) << '\n';
+    }
+    ofstream.close();
+    std::cout << "=================================================================" << '\n';
+    std::cout << "TK_EQ_ALL.csv has been created successfully!" << std::endl;
+}
+void writeFile1(std::ofstream &omegaFile, std::vector<std::tuple<WAT, DataEntryEQ, InlineTR, Eqlot>> &mergedData)
+{
+    omegaFile << "LOT,WAFER,PRODUCT,WIP_MVIN_TIME,WIP_PU,ROUTENAME,STEPNAME,PARAMETER,SPEC_CLOW,SPEC_TARGET,SPEC_HIGH,AVERAGE,T_VALUE,B_VALUE,C_VALUE,R_VALUE,L_VALUE,WAT_STDEV,HEAD_UNIT,HEAD_RPM,Innertube,Membrane,RetRing,Head_RPM_P2,Innertube_P2,Membrane_P2,Retring_P2,HEAD_RPM_P3,Innertube_P3,Membrane_P3,Retring_P3,EP_TIME1,EP_TIME2,EP_TIME3,CON1_HEAD_PRES,CON1_HEAD_RPM,CON2_HEAD_PRES,CON2_HEAD_RPM,CON3_HEAD_PRES,CON3_HEAD_RPM,Slurry1Flow,Inline_TK_Average,Inline_Range,Inline_TK_STDEV,M1,M2,M3,M4,M5,M6,M7,M8,M9,Headusage,Pad1_life,Pad2_life,Pad3_life,Condition_1,Condition_2,Condition_3,Moveout_Time\n";
+    for (const auto &tuple : mergedData)
+    {
+        const WAT &a = std::get<0>(tuple);
+        const DataEntryEQ &b = std::get<1>(tuple);
+        const InlineTR &c = std::get<2>(tuple);
+        const Eqlot &d = std::get<3>(tuple);
+        writeWATToStream(omegaFile, a);
+        writeCMPEQToStream(omegaFile, b);
+        writeInlineToStream(omegaFile, c);
+        int unit = b.getHeadUnit();
+        writeEqlotToStream(omegaFile, d, unit);
+        omegaFile << '\n';
+        std::cout << a.getLot() << "\t|" << a.getWafer() << "\t|" << a.getProduct() << "\t|" << a.getAverage() << "\t\t|" << c.getInlineTK_Calculate_vec()[0][0] << '\n';
+    }
+    omegaFile.close();
+    std::cout << "=================================================================" << '\n';
+    std::cout << "WAT_TK_EQ_ALL.csv has been created successfully!" << std::endl;
+}
+void writeFile6(std::ofstream &omegaFile, std::vector<std::tuple<Defect, DataEntryEQ, Eqlot>> &mergedData)
+{
+    omegaFile << "LOT,WAFER,PRODUCT,WIP_MVIN_TIME,WIP_PU,ROUTENAME,STEPNAME,DEFECT_COUNT,SPEC_CLOW,SPEC_HIGH,HEAD_UNIT,HEAD_RPM_P1,Innertube_P1,Membrane_P1,RetRing_P1,Head_RPM_P2,Innertube_P2,Membrane_P2,Retring_P2,HEAD_RPM_P3,Innertube_P3,Membrane_P3,Retring_P3,EP_TIME_1,EP_TIME_2,EP_TIME_3,CON1_HEAD_PRES,CON1_HEAD_RPM,CON2_HEAD_PRES,CON2_HEAD_RPM,CON3_HEAD_PRES,CON3_HEAD_RPM,Slurry1Flow,Head_Usage,Pad1_life,Pad2_life,Pad3_life,Condition_1,Condition_2,Condition_3,Move_Out_Time\n";
+    for (const auto &tuple : mergedData)
+    {
+        const Defect &a = std::get<0>(tuple);
+        const DataEntryEQ &b = std::get<1>(tuple);
+        const Eqlot &c = std::get<2>(tuple);
+        // const Eqlot &d = std::get<3>(tuple);
+        writeBasicToStream(omegaFile, a);
+        writeCMPEQToStream(omegaFile, b);
+        int unit = b.getHeadUnit();
+        writeEqlotToStream(omegaFile, c, unit);
+        omegaFile << '\n';
+        std::cout << a.getLot() << "\t|" << a.getWafer() << "\t|" << a.getProduct() << "\t|" << a.getdefect() << "\t\t|" << c.getEPTime1(1) << '\n';
+    }
+    omegaFile.close();
+    std::cout << "=================================================================" << '\n';
+    std::cout << "Defect_EQ_ALL.csv has been created successfully!" << std::endl;
+}
+void writeFile7(std::ofstream &omegaFile, std::vector<std::tuple<InlineTR, DataEntryEQ, Eqlot>> &mergedData)
+{
+    omegaFile << "LOT,WAFER,PRODUCT,PROCESS,WIP_MVOUT_TIME,WIP_PU,ROUTENAME,RECIPE,Average,Range,STDEV,M1,M2,M3,M4,M5,M6,M7,M8,M9,SPEC_CLOW,SPEC_HIGH,SPEC_TARGET,HEAD_UNIT,HEAD_RPM_P1,Innertube_P1,Membrane_P1,RetRing_P1,Head_RPM_P2,Innertube_P2,Membrane_P2,Retring_P2,HEAD_RPM_P3,Innertube_P3,Membrane_P3,Retring_P3,EP_TIME_1,EP_TIME_2,EP_TIME_3,CON1_HEAD_PRES,CON1_HEAD_RPM,CON2_HEAD_PRES,CON2_HEAD_RPM,CON3_HEAD_PRES,CON3_HEAD_RPM,Slurry1Flow,Head_Usage,Pad1_life,Pad2_life,Pad3_life,Condition_1,Condition_2,Condition_3,Move_Out_Time\n";
+    for (const auto &tuple : mergedData)
+    {
+        const InlineTR &a = std::get<0>(tuple);
+        const DataEntryEQ &b = std::get<1>(tuple);
+        const Eqlot &c = std::get<2>(tuple);
+        // const Eqlot &d = std::get<3>(tuple);
+        writeBasicToStream(omegaFile, a);
+        writeCMPEQToStream(omegaFile, b);
+        int unit = b.getHeadUnit();
+        writeEqlotToStream(omegaFile, c, unit);
+        omegaFile << '\n';
+        std::cout << a.getLot() << "\t|" << a.getWafer() << "\t|" << a.getProduct() << "\t|" << a.getInlineTK_Calculate_vec()[0][0] << "\t\t|" << c.getEPTime1(1) << '\n';
+    }
+    omegaFile.close();
+    std::cout << "=================================================================" << '\n';
+    std::cout << "Defect_EQ_ALL.csv has been created successfully!" << std::endl;
+}
+void writeFile8(std::ofstream &omegaFile, std::vector<std::tuple<WAT, InlineTR, DataEntryEQ, Eqlot>> &mergedData)
+{
+    omegaFile << "LOT,WAFER,PRODUCT,WIP_MVIN_TIME,WIP_PU,ROUTENAME,STEPNAME,PARAMETER,SPEC_CLOW,SPEC_TARGET,SPEC_HIGH,AVERAGE,T_VALUE,B_VALUE,C_VALUE,R_VALUE,L_VALUE,WAT_STDEV,Average,Range,STDEV,M1,M2,M3,M4,M5,M6,M7,M8,M9,SPEC_CLOW,SPEC_HIGH,SPEC_TARGET,Head_Unit,HEAD_RPM,Innertube,Membrane,RetRing,Head_RPM_P2,Innertube_P2,Membrane_P2,Retring_P2,HEAD_RPM_P3,Innertube_P3,Membrane_P3,Retring_P3,EP_TIME1,EP_TIME2,EP_TIME3,CON1_HEAD_PRES,CON1_HEAD_RPM,CON2_HEAD_PRES,CON2_HEAD_RPM,CON3_HEAD_PRES,CON3_HEAD_RPM,Slurry1Flow,Headusage,Pad1_life,Pad2_life,Pad3_life,Condition_1,Condition_2,Condition_3,Moveout_Time\n";
+    for (const auto &tuple : mergedData)
+    {
+        const WAT &a = std::get<0>(tuple);
+        const InlineTR &b = std::get<1>(tuple);
+        const DataEntryEQ &c = std::get<2>(tuple);
+        const Eqlot &d = std::get<3>(tuple);
+        // const Eqlot &d = std::get<3>(tuple);
+        writeWATToStream(omegaFile, a);
+        writeInlineToStream(omegaFile, b);
+        writeCMPEQToStream(omegaFile, c);
+        int unit = c.getHeadUnit();
+        writeEqlotToStream(omegaFile, d, unit);
+        omegaFile << '\n';
+        std::cout << a.getLot() << "\t|" << a.getWafer() << "\t|" << a.getProduct() << "\t|" << a.getAverage() << "\t|" << '\n';
+    }
+    omegaFile.close();
+    std::cout << "=================================================================" << '\n';
+    std::cout << "WAT_TK_EQ_ALL.csv has been created successfully!" << std::endl;
+}
+template <typename T>
+std::vector<T> readCSV(const std::string &filePath, std::unordered_map<std::string, T> &entryMap, const int &i)
+{
+    std::ifstream file(filePath);
+    // std::vector<T> entryvec = readFileResult<T>(file, filePath);
+    std::vector<T> entryvec = readFileResult<T>(file, filePath);
+    std::string line;
+    std::getline(file, line); // this is a title
+    std::unordered_map<std::string, int> titleMap;
+    std::istringstream iss(line);
+    std::string token;
+    int idCounter = 0;
+    std::vector<int> counVector;
+    std::string repeatStartTitle;
+    while (std::getline(iss, token, ','))
+    {
+        handleString(token);
+        readHeader_Count_Reapeat(counVector, repeatStartTitle, titleMap, token, idCounter);
+    }
+    std::string fileTypeTest = judgeDatafiletype(titleMap);
+    setCaseType(fileTypeTest, true);
+    std::cout << '\n';
+    std::cout << "The file name : " << filePath << "\twhich is the title of " << fileTypeTest << '\n'; // debug
+    std::cout << '\n';
+    std::vector<std::pair<std::string, int>> theFileCurrentvec;
+    defineColumnMap(theFileCurrentvec, fileTypeTest, counVector, repeatStartTitle, titleMap);
+    // std::cout << "size of pushing vector (containing repeated) is\t " << theFileCurrentvec.size() << '\n';
+    handle_sort_remove_unique(theFileCurrentvec);
+    std::cout << "Handling the title (sorting and removing)" << '\n';
     // for (const auto elem : theFileCurrentvec)
     // {
     //     std::cout << elem.first << " at the " << elem.second << std::endl;
@@ -247,17 +441,16 @@ std::vector<T> readCSV(const std::string &filePath, std::unordered_map<std::stri
         //     std::cout << elem << ',';
         // }
         // std::cout << '\n';
-
-        if (!UEDA_MaP[fileTypeTest].empty())
+        if (!UEDA_MaP[fileTypeTest].empty()) // if defect file exist
         {
             T entry(row, UEDA_MaP[fileTypeTest], theFileCurrentvec);
-            std::string hashkey = entry.getKeyDE();
-            auto it = entryMap.find(hashkey);
+            //(row, watch defect count, filfile current temp;)
+            std::string hashkey = entry.getKeyDE(i); // get the key
+            auto it = entryMap.find(hashkey);        // if the dataexist , update it;
             if (it != entryMap.end())
             {
-
-                std::cout << hashkey << "\t"
-                          << "Updating\t" << fileTypeTest << "in the file\t" << filePath << "\twatch column : " << UEDA_MaP[fileTypeTest] << '\n';
+                // std::cout << hashkey << "\t"
+                //           << "Updating\t" << fileTypeTest << "in the file\t" << filePath << "\twatch column : " << UEDA_MaP[fileTypeTest] << '\n';
                 it->second.setFileData(row, UEDA_MaP[fileTypeTest], theFileCurrentvec);
             }
             else
@@ -269,65 +462,5 @@ std::vector<T> readCSV(const std::string &filePath, std::unordered_map<std::stri
     }
     file.close();
     return entryvec;
-}
-static std::vector<std::string> pTitlevecwat{"LOT", "Wafer", "Product", "WAT_Average", "Inline_TK_avg"};
-static std::vector<std::string> pTitlevecinline{"LOT", "Wafer", "Product", "TK Average", "P1 padlife"};
-
-void readMonitorTitle(const std::vector<std::string> &pTitlevec)
-{
-    for (const auto &elem : pTitlevec)
-    {
-        if (elem == *pTitlevec.cbegin())
-        {
-            std::cout << elem;
-        }
-        else
-        {
-            std::cout << "\t" << elem;
-        }
-    }
-    std::cout << '\n';
-
-    std::cout << "=================================================================" << '\n';
-}
-void writeFile(std::ofstream &ofstream, std::vector<std::tuple<InlineTR, DataEntryEQ, Eqlot>> &mergedData3)
-{
-    ofstream << "LOT,WAFER,PROCWSS,PRODUCT,ROUTENAME,PROCESS_PU,Inline_TK_Average,Inline_Range,Inline_TK_STDEV,M1,M2,M3,M4,M5,M6,M7,M8,M9,HEAD_UNIT,HEAD_RPM,Innertube,Membrane,RetRing,Head_RPM_P2,Innertube_P2,Membrane_P2,Retring_P2,HEAD_RPM_P3,Innertube_P3,Membrane_P3,Retring_P3,EP_TIME1,EP_TIME2,EP_TIME3,CON1_HEAD_PRES,CON1_HEAD_RPM,CON2_HEAD_PRES,CON2_HEAD_RPM,CON3_HEAD_PRES,CON3_HEAD_RPM,Slurry1Flow,Headusage,Pad1_life,Pad2_life,Pad3_life,Condition_1,Condition_2,Condition_3,Moveout_Time\n";
-    for (const auto &tuple : mergedData3)
-    {
-        const InlineTR &a = std::get<0>(tuple);
-        const DataEntryEQ &b = std::get<1>(tuple);
-        const Eqlot &c = std::get<2>(tuple);
-        writeInlineToStream3(ofstream, a);
-        writeCMPEQToStream(ofstream, b);
-        int unit = b.getHeadUnit();
-        writeEqlotToStream(ofstream, c, unit);
-        ofstream << '\n';
-        std::cout << a.getLot() << "\t|" << a.getWafer() << "\t|" << a.getProduct() << "\t|" << a.getInlineTK_Calculate_vec()[0][0] << "\t\t|" << c.getPlaten1UsingTime(1) << '\n';
-    }
-    ofstream.close();
-    std::cout << "=================================================================" << '\n';
-    std::cout << "TK_EQ_ALL.csv has been created successfully!" << std::endl;
-}
-void writeFile1(std::ofstream &omegaFile, std::vector<std::tuple<WAT, DataEntryEQ, InlineTR, Eqlot>> &mergedData)
-{
-    omegaFile << "LOT,WAFER,PRODUCT,WIP_MVIN_TIME,WIP_PU,ROUTENAME,STEPNAME,PARAMETER,SPEC_CLOW,SPEC_TARGET,SPEC_HIGH,AVERAGE,T_VALUE,B_VALUE,C_VALUE,R_VALUE,L_VALUE,WAT_STDEV,HEAD_UNIT,HEAD_RPM,Innertube,Membrane,RetRing,Head_RPM_P2,Innertube_P2,Membrane_P2,Retring_P2,HEAD_RPM_P3,Innertube_P3,Membrane_P3,Retring_P3,EP_TIME1,EP_TIME2,EP_TIME3,CON1_HEAD_PRES,CON1_HEAD_RPM,CON2_HEAD_PRES,CON2_HEAD_RPM,CON3_HEAD_PRES,CON3_HEAD_RPM,Slurry1Flow,Inline_TK_Average,Inline_Range,Inline_TK_STDEV,M1,M2,M3,M4,M5,M6,M7,M8,M9,Headusage,Pad1_life,Pad2_life,Pad3_life,Condition_1,Condition_2,Condition_3,Moveout_Time\n";
-    for (const auto &tuple : mergedData)
-    {
-        const WAT &a = std::get<0>(tuple);
-        const DataEntryEQ &b = std::get<1>(tuple);
-        const InlineTR &c = std::get<2>(tuple);
-        const Eqlot &d = std::get<3>(tuple);
-        writeWATToStream(omegaFile, a);
-        writeCMPEQToStream(omegaFile, b);
-        writeInlineToStream(omegaFile, c);
-        int unit = b.getHeadUnit();
-        writeEqlotToStream(omegaFile, d, unit);
-        omegaFile << '\n';
-        std::cout << a.getLot() << "\t|" << a.getWafer() << "\t|" << a.getProduct() << "\t|" << a.getAverage() << "\t\t|" << c.getInlineTK_Calculate_vec()[0][0] << '\n';
-    }
-    omegaFile.close();
-    std::cout << "=================================================================" << '\n';
-    std::cout << "WAT_TK_EQ_ALL.csv has been created successfully!" << std::endl;
 }
 #endif

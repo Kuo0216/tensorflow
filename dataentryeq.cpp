@@ -8,37 +8,38 @@
 DataEntryEQ::DataEntryEQ(const std::vector<std::string> &row, const std::string &focusitem, std::vector<std::pair<std::string, int>> titleTest) : moveInWaferCount(0.0), moveOutWaferCount(0.0), moveInOperator(0.0),
                                                                                                                                                   diffMaxMin(0.0), head1Rpm(0.0), head2Rpm(0.0), head3Rpm(0.0), head4Rpm(0.0),
                                                                                                                                                   patenRpm(0.0), slurry1Flow(0.0),
-                                                                                                                                                  headUnit(0), headRPMvec(3, std::vector<double>(4, 0.0)), innerTubePresvec(3, std::vector<double>(4, 0.0)), membranePresvec(3, std::vector<double>(4, 0.0)), retaRingPresvec(3, std::vector<double>(4, 0.0)), conHeadPresvec(3, 0.0), conHeadRpmvec(3, 0.0), epTimevec(3, 0.0)
+                                                                                                                                                  headUnit(0), headRPMvec(3, std::vector<double>(5, 0.0)), innerTubePresvec(3, std::vector<double>(5, 0.0)), membranePresvec(3, std::vector<double>(5, 0.0)), retaRingPresvec(3, std::vector<double>(5, 0.0)), conHeadPresvec(3, 0.0), conHeadRpmvec(3, 0.0), epTimevec(3, 0.0),
+                                                                                                                                                  conPresDeltavec(3, 0.0)
 {
-    lot = row[findValue(titleTest, "LOT")];
-    wafer = row[findValue(titleTest, "WAFER")];
-    lotJobSequence = row[findValue(titleTest, "LOTJOBSEQUENCE")];
-    chamber = row[findValue(titleTest, "CHAMBER")];
-    recipeStep = row[findValue(titleTest, "RECIPE_STEP")];
-    product = row[findValue(titleTest, "PRODUCT")];
-    process = row[findValue(titleTest, "PROCESS")];
-    puType = row[findValue(titleTest, "PUTYPE")];
-    routeName = row[findValue(titleTest, "ROUTENAME")];
-    stepName = row[findValue(titleTest, "STEPNAME")];
-    processUnit = row[findValue(titleTest, "PROCESSINGUNIT")];
-    puFamily = row[findValue(titleTest, "PUFAMILY")];
-    area = row[findValue(titleTest, "AREA")];
-    recipe1 = row[findValue(titleTest, "RECIPE1")];
-    recipe2 = row[findValue(titleTest, "RECIPE2")];
-    moveInTime = row[findValue(titleTest, "MOVE_IN_TIME")];
-    moveOutTime = row[findValue(titleTest, "MOVE_OUT_TIME")];
-    moveInWaferCount = convertAndHandle<double>(row[findValue(titleTest, "MOVE_IN_WAFER_COUNT")], row); // 17
-    moveOutWaferCount = convertAndHandle<double>(row[findValue(titleTest, "MOVE_OUT_WAFER_COUNT")]);    // 18
-    moveInOperator = convertAndHandle<double>(row[findValue(titleTest, "MOVE_IN_OPERATOR")]);           // 19                                                     // 20
+    lot = row[findValue(titleTest, "LOT")];                                                                         // 0
+    wafer = row[findValue(titleTest, "WAFER")];                                                                     // 1
+    lotJobSequence = row[findValue(titleTest, "LOTJOBSEQUENCE")];                                                   // 2
+    chamber = row[findValue(titleTest, "CHAMBER")];                                                                 // 3
+    recipeStep = row[findValue(titleTest, "RECIPE_STEP")];                                                          // 4
+    product = row[findValue(titleTest, "PRODUCT")];                                                                 // 5
+    process = row[findValue(titleTest, "PROCESS")];                                                                 // 6
+    puType = row[findValue(titleTest, "PUTYPE")];                                                                   // 7
+    routeName = row[findValue(titleTest, "ROUTENAME")];                                                             // 8
+    stepName = row[findValue(titleTest, "STEPNAME")];                                                               // 9
+    processUnit = row[findValue(titleTest, "PROCESSINGUNIT")];                                                      // 10
+    puFamily = row[findValue(titleTest, "PUFAMILY")];                                                               // 11
+    area = row[findValue(titleTest, "AREA")];                                                                       // 12
+    recipe1 = row[findValue(titleTest, "RECIPE1")];                                                                 // 13
+    recipe2 = row[findValue(titleTest, "RECIPE2")];                                                                 // 14
+    moveInTime = row[findValue(titleTest, "MOVE_IN_TIME")];                                                         // 15
+    moveOutTime = row[findValue(titleTest, "MOVE_OUT_TIME")];                                                       // 16
+    moveInWaferCount = convertAndHandle<double>(row[findValue(titleTest, "MOVE_IN_WAFER_COUNT")], defaultDouble);   // 17
+    moveOutWaferCount = convertAndHandle<double>(row[findValue(titleTest, "MOVE_OUT_WAFER_COUNT")], defaultDouble); // 18
+    moveInOperator = convertAndHandle<double>(row[findValue(titleTest, "MOVE_IN_OPERATOR")], defaultDouble);        // 19                                                     // 20
     moveOutOperator = row[findValue(titleTest, "MOVE_OUT_OPERATOR")];
-    diffMaxMin = convertAndHandle<double>(row[findValue(titleTest, "Diff_MaxMin")]);
-    head1Rpm = convertAndHandle<double>(row[findValue(titleTest, "HEAD1_RPM")]); // 28
-    head2Rpm = convertAndHandle<double>(row[findValue(titleTest, "HEAD2_RPM")]);
-    head3Rpm = convertAndHandle<double>(row[findValue(titleTest, "HEAD3_RPM")]);
-    head4Rpm = convertAndHandle<double>(row[findValue(titleTest, "HEAD4_RPM")]);
-    patenRpm = convertAndHandle<double>(row[findValue(titleTest, "PLATEN_RPM")]); // 40
-    slurry1Flow = convertAndHandle<double>(row[findValue(titleTest, "SLURRY1_FLOW")]);
-    keyDE = lot + wafer + routeName + recipe1;
+    diffMaxMin = convertAndHandle<double>(row[findValue(titleTest, "Diff_MaxMin")], -1);
+    head1Rpm = convertAndHandle<double>(row[findValue(titleTest, "HEAD1_RPM")], 0, row); // 28
+    head2Rpm = convertAndHandle<double>(row[findValue(titleTest, "HEAD2_RPM")], 0, row);
+    head3Rpm = convertAndHandle<double>(row[findValue(titleTest, "HEAD3_RPM")], 0, row);
+    head4Rpm = convertAndHandle<double>(row[findValue(titleTest, "HEAD4_RPM")], 0, row);
+    patenRpm = convertAndHandle<double>(row[findValue(titleTest, "PLATEN_RPM")], 0, row); // 40
+    slurry1Flow = convertAndHandle<double>(row[findValue(titleTest, "SLURRY1_FLOW")], 0, row);
+    // keyDE =
     if (head1Rpm != 0.0)
     {
         headUnit = 1;
@@ -55,6 +56,10 @@ DataEntryEQ::DataEntryEQ(const std::vector<std::string> &row, const std::string 
     {
         headUnit = 4;
     }
+    else
+    {
+        headUnit = 5;
+    }
     setFileDataInit(row, focusitem, titleTest); // INIT
 }
 int DataEntryEQ::getHeadUnit() const
@@ -63,10 +68,10 @@ int DataEntryEQ::getHeadUnit() const
 }
 void DataEntryEQ::setFileData(const std::vector<std::string> &row, const std::string &focusitem, std::vector<std::pair<std::string, int>> titleTest)
 {
-    std::string ch{focusitem};
+    // std::string ch{focusitem};
     std::string chNostring = row[findValue(titleTest, focusitem)];
-    int chNO, unitNo;
-    chNO = convertAndHandle<int>(chNostring);
+    int chNO = 0, unitNo = 0;
+    chNO = convertAndHandle<int>(chNostring); // if chamber int ==2 or chamber int ==3
     double h1 = convertAndHandle<double>(row[findValue(titleTest, "HEAD1_RPM")]);
     double h2 = convertAndHandle<double>(row[findValue(titleTest, "HEAD2_RPM")]);
     double h3 = convertAndHandle<double>(row[findValue(titleTest, "HEAD3_RPM")]);
@@ -89,7 +94,7 @@ void DataEntryEQ::setFileData(const std::vector<std::string> &row, const std::st
     }
     else
     {
-        unitNo = 0;
+        unitNo = 5;
     }
     int i = unitmapValue(chNO), j = unitmapValue(unitNo);
     headRPMvec[i][j] = convertAndHandle<double>(row[findValue(titleTest, "HEAD1_RPM") + j]);
@@ -97,13 +102,15 @@ void DataEntryEQ::setFileData(const std::vector<std::string> &row, const std::st
     membranePresvec[i][j] = convertAndHandle<double>(row[findValue(titleTest, "MEMBRANE1_PRES") + j]);   // 3set cuz 3 platen;by4
     retaRingPresvec[i][j] = convertAndHandle<double>(row[findValue(titleTest, "RETA_RING1_PRES") + j]);  // 3set cuz 3 platen;by4
     conHeadPresvec[i] = convertAndHandle<double>(row[findValue(titleTest, "CON_HEAD_PRES")]);            // 3set cuz 3 platen         // 21
-    conHeadRpmvec[i] = convertAndHandle<double>(row[findValue(titleTest, "CON_HEAD_PRES")]);             // 3set cuz 3 platen
+    conHeadRpmvec[i] = convertAndHandle<double>(row[findValue(titleTest, "CON_HEAD_RPM")]);
+    conPresDeltavec[i] = convertAndHandle<double>(row[findValue(titleTest, "CON_PRES_DELTA")]); // 3set cuz 3 platen
     epTimevec[i] = convertAndHandle<double>(row[findValue(titleTest, "EP_TIME_1") + i]);
-    keyRoute = processUnit + routeName;
+    // keyRoute = processUnit + routeName;
 }
 void DataEntryEQ::setFileDataInit(const std::vector<std::string> &row, const std::string &focusitem, std::vector<std::pair<std::string, int>> titleTest)
 {
-    std::string ch{focusitem};
+
+    // std::string ch{focusitem};
     std::unordered_map<std::string, int> chMap{
         {"1", 0}, {"2", 1}, {"3", 2}};
     int i = chMap[chamber], j = unitmapValue(headUnit);
@@ -112,9 +119,10 @@ void DataEntryEQ::setFileDataInit(const std::vector<std::string> &row, const std
     membranePresvec[i][j] = convertAndHandle<double>(row[findValue(titleTest, "MEMBRANE1_PRES") + j]);   // 3set cuz 3 platen;by4
     retaRingPresvec[i][j] = convertAndHandle<double>(row[findValue(titleTest, "RETA_RING1_PRES") + j]);  // 3set cuz 3 platen;by4
     conHeadPresvec[i] = convertAndHandle<double>(row[findValue(titleTest, "CON_HEAD_PRES")]);            // 3set cuz 3 platen         // 21
-    conHeadRpmvec[i] = convertAndHandle<double>(row[findValue(titleTest, "CON_HEAD_PRES")]);             // 3set cuz 3 platen
+    conHeadRpmvec[i] = convertAndHandle<double>(row[findValue(titleTest, "CON_HEAD_RPM")]);              // 3set cuz 3 platenPM
+    conPresDeltavec[i] = convertAndHandle<double>(row[findValue(titleTest, "CON_PRES_DELTA")]);
     epTimevec[i] = convertAndHandle<double>(row[findValue(titleTest, "EP_TIME_1") + i]);
-    keyRoute = processUnit + routeName;
+    // keyRoute =
 } // 3set cuz 3 platen
 size_t DataEntryEQ::size() const
 {
@@ -143,7 +151,8 @@ double DataEntryEQ::getCMPeqp(const int &platen, const std::vector<std::vector<d
 }
 std::string DataEntryEQ::getKeyDE() const
 {
-    return keyDE;
+    return lot + wafer + routeName + recipe1;
+    ;
 }
 std::vector<std::vector<double>> DataEntryEQ::getHeadRPMvec() const
 {
@@ -205,10 +214,11 @@ double DataEntryEQ::getConHeadRpmvec(const int &platen) const
     int k = unitmapValue(platen);
     return conHeadRpmvec[k];
 }
-std::string DataEntryEQ::getKeyRoute() const
-{
-    return keyRoute;
-}
+// std::string DataEntryEQ::getKeyRoute() const
+// {
+//     return processUnit + routeName;
+//     ;
+// }
 double DataEntryEQ::getSlurryFlow() const
 {
     return slurry1Flow;
@@ -217,7 +227,26 @@ std::string DataEntryEQ::getMoveOutTime() const
 {
     return moveOutTime;
 }
-std::string DataEntryEQ::getKeyEQ_Route_PU_MoveOut() const
+std::string DataEntryEQ::getKeyDE(const int &i) const
 {
-    return lot.substr(0, 5) + processUnit + routeName + moveOutTime;
+    if (i == 1)
+    {
+        return lot.substr(0, 5) + wafer + routeName + processUnit;
+    }
+    else if (i == 2)
+    {
+        return lot + wafer + routeName + recipe1 + moveOutTime;
+    }
+    else if (i == 3)
+    {
+        return lot.substr(0, 5) + wafer + routeName + recipe1;
+    }
+    else
+    {
+        return lot + wafer + routeName + recipe1;
+    }
+}
+std::string DataEntryEQ::getLotJobSequence() const
+{
+    return lotJobSequence;
 }

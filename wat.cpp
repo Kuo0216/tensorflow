@@ -35,7 +35,11 @@ WAT::WAT(const std::vector<std::string> &row, const std::string &focusitem, std:
     stepname = row[findValue(titleTest, "STEPNAME")];
     wiprecipe = row[findValue(titleTest, "WIP_RECIPE")];
     keyRoute = lot.substr(0, 5) + wafer + routename;
-    keyDE = lot + wafer + parameter + routename + wiprecipe;
+    // keyDE = lot + wafer + parameter + routename + wiprecipe;
+}
+void WAT::setEXP()
+{
+    condition = true;
 }
 void WAT::setFileData(const std::vector<std::string> &row, const std::string &focusitem, std::vector<std::pair<std::string, int>> titleTest)
 {
@@ -47,8 +51,8 @@ void WAT::setFileDataInit(const std::vector<std::string> &row, const std::string
 }
 std::string WAT::getKeyDE() const
 {
-    // std::string keyD = lot.substr(0, 5) + wafer;
-    return keyDE;
+
+    return lot + wafer + parameter + routename + wiprecipe;
 }
 std::string WAT::getTestType() const
 {
@@ -198,10 +202,10 @@ void writeWATToStream(std::ofstream &os, const WAT &b)
        << b.getLValue() << ","
        << b.calculateStandardDeviation() << ",";
 }
-std::string WAT::getKeyRoute() const
-{
-    return keyRoute;
-}
+// std::string WAT::getKeyRoute() const
+// {
+//     return keyRoute;
+// }
 void WAT::setFileData(const std::vector<std::string> &row, const int &i)
 {
     if (i == 1)
@@ -219,6 +223,24 @@ void WAT::setFileData(const std::vector<std::string> &row, const int &i)
 }
 std::string WAT::getkey_Wafer_Routename() const
 {
+    return lot.substr(0, 5) + wafer + routename + wiprecipe;
+}
+std::string WAT::getkey_Wafer_Routename(const int &i) const
+{
+    switch (i)
+    {
+    case 1:
+        return lot + wafer + parameter + routename + wiprecipe;
+        break;
+    case 2:
+        return lot + wafer + parameter + routename + wiprecipe;
+        break;
+    case 3:
+        return lot.substr(0, 5) + wafer + routename + wiprecipe;
+        break;
+    default:
+        break;
+    }
     return lot.substr(0, 5) + wafer + routename + wiprecipe;
 }
 std::string WAT::getkey_Routename() const
@@ -256,4 +278,40 @@ std::string WAT::getRoutename() const
 std::string WAT::getStepname() const
 {
     return stepname;
+}
+std::string WAT::getKeyDE(const int &i) const
+{
+    switch (i)
+    {
+    case 1:
+        return lot + wafer + parameter + routename + wiprecipe;
+        break;
+    case 2:
+        return lot + wafer + parameter + routename + wiprecipe;
+        break;
+    case 3:
+        return lot + wafer + parameter + routename + wiprecipe;
+        break;
+    default:
+        break;
+    }
+    return lot + wafer + parameter + routename + wiprecipe;
+}
+std::string WAT::getkey_Routename(const int &i) const
+{
+    switch (i)
+    {
+    case 1:
+        return lot + wafer + parameter + routename + wiprecipe;
+        break;
+    case 2:
+        return lot + wafer + parameter + routename + wiprecipe;
+        break;
+    case 3:
+        return lot.substr(0, 5) + routename + wiprecipe;
+        break;
+    default:
+        break;
+    }
+    return lot + wafer + parameter + routename + wiprecipe;
 }

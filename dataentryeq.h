@@ -9,13 +9,15 @@ private:
     std::string wafer;   // 1
     std::string product; // 5
     std::string process; // 6
-    std::string keyDE;
+    // unsigned int lobjobsequence;
+    // std::string keyDE;
     std::vector<std::vector<double>> headRPMvec;       // 3set cuz 3 platen;by4
     std::vector<std::vector<double>> innerTubePresvec; // 3set cuz 3 platen;by4
     std::vector<std::vector<double>> membranePresvec;  // 3set cuz 3 platen;by4
     std::vector<std::vector<double>> retaRingPresvec;  // 3set cuz 3 platen;by4
     std::vector<double> conHeadPresvec;                // 3set cuz 3 platen         // 21
     std::vector<double> conHeadRpmvec;                 // 3set cuz 3 platen
+    std::vector<double> conPresDeltavec;               // CON_PRES_DELTA;
     std::vector<double> epTimevec;
     std::string keyRoute;        // 3set cuz 3 platen
     std::string lotJobSequence;  // 2
@@ -62,9 +64,11 @@ public:
     std::vector<std::vector<double>> getMembranePresvec() const;
     std::vector<std::vector<double>> getRetaRingPresvec() const;
     std::string getKeyDE() const;
-    std::string getKeyEQ_Route_PU_MoveOut() const;
+    std::string getKeyDE(const int &i) const;
+    std::string getLotJobSequence() const;
+    // std::string getKeyEQ_Route_PU_MoveOut() const;
     friend void writeCMPEQToStream(std::ofstream &os, const DataEntryEQ &a);
-    std::string getKeyRoute() const;
+    // std::string getKeyRoute() const;
     std::string getMoveOutTime() const;
     size_t size() const;
 };

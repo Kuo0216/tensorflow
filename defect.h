@@ -1,11 +1,9 @@
 #ifndef DEAFECT_H
 #define DEAFECT_H
-
 #include <string>
 #include <vector>
 #include <fstream>
 #include <unordered_map>
-
 class Defect
 {
 private:
@@ -13,13 +11,13 @@ private:
     std::string process;
     std::string lot;
     std::string wafer;
-    std::string keyDE;
-    std::vector<std::string> wipTimevec;
+    std::vector<std::string> wipTimevec;        // movein 0 moveout 1
     std::vector<std::string> wipRoutendStepvec; // route route name,step,step name
     std::vector<std::string> wipPUAndRecipevec; // WPU type,PU,Equipment,Recipe,chamber
     bool condition = false;
     double defect_count = 0;
-
+    double defect_spec_low = 0;
+    double defect_spec_high = 100;
     std::string corrLot;
 
 public:
@@ -37,12 +35,17 @@ public:
     std::string getLot() const;
     std::string getWafer() const;
     std::string getKeyDE() const;
+    std::string getKeyDE(const int &) const;
+    std::string getKeyRouteName() const;
+    std::string getKeyRouteName(const int &i) const;
     std::string getwipRounteName() const;
     std::string getwipStepName() const;
     std::string getwipIntime() const;
     std::string getwipOuttime() const;
-    std::string getKeyRouteName() const;
     std::string getwipPU() const;
+    double getSpecLow() const;
+    double getSpecHigh() const;
+    double getdefect() const;
     bool getCondition() const;
     friend void writeBasicToStream(std::ofstream &os, const Defect &a);
 };

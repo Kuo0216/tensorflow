@@ -26,21 +26,22 @@
 static std::unordered_map<std::string, std::string> keytypeMap{
     {"DEFECT_ANALYSIS", "DEFECT_KEY"},
     {"TK_ANALYSIS", "TK_KEY"}};
+template <typename T>
+void calculateMeanAndStdDev(std::vector<T> &group, std::vector<T> &excludeValues, double &mean, double &stddev);
 int main()
 {
     std::vector<double> excludeValues = {0, -1};
-    std::vector<double> groupA = {11.2, 12.5, 14.3, 13.7, 12.8, 13.9, 11.7, 12.3, 12.6, 13.0};
+    std::vector<double> groupA = {11.2, 0, 0, -1, -1, -1, -1, -1, -1, -0};
     std::vector<double> groupB = {10.5, 10.8, 11.2, 11.0, 11.6, 10.9, 11.3, 11.7, 10.8, 11.5};
     // // Calculate the F-test p-value
     double meanA, stddevA;
 
+    calculateMeanAndStdDev(groupA, excludeValues, meanA, stddevA);
     std::cout << "Group A: Mean = " << meanA << ", Standard Deviation = " << stddevA << std::endl;
-
     // Calculate and display statistics for groupB, excluding specified values
     double meanB, stddevB;
     calculateMeanAndStdDev(groupB, excludeValues, meanB, stddevB);
     std::cout << "Group B: Mean = " << meanB << ", Standard Deviation = " << stddevB << std::endl;
-
     // double pValue = calculateFTestPValue(groupA, groupB);
     // double p1Value = calculateTTestPValue(groupA, groupB);
     // std::cout << "F-test p-Value: " << pValue << std::endl;

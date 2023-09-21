@@ -5,7 +5,7 @@
 class Eqlot
 {
 private:
-    std::string keyde;
+    // std::string keyde;
     std::vector<std::vector<double>> headUsageAndTimevec; // 3set cuz 3 platen;by4
     std::vector<double> polishTimevec;                    // 3set cuz 3 platen;by4
     std::vector<std::vector<double>> platvec;             // 3set cuz 3 platen;by4
@@ -56,8 +56,8 @@ private:
     double polishTime1; // 45
     double polishTime2; // 45
     double polishTime3; // 45
-    double maxtime = 0.0;
-    double mintime = 0.0;
+    double maxtime;
+    double mintime;
     int headUnit = 0;
 
 public:
@@ -77,9 +77,10 @@ public:
     double getPlaten1UsingTime(const int &platen) const;
     // double getCMPeqp(const int &platen, const std::vector<std::vector<double>> &eqvec) const;
     double getSlurryFlow() const;
-    std::string getKeyEQ_Route_PU_MoveOut() const;
+    // std::string getKeyEQ_Route_PU_MoveOut() const;
     std::string getKeyDE() const;
-    std::string getKeyRoute() const;
+    std::string getKeyDE(const int &i) const;
+    // std::string getKeyRoute() const;
     std::string getMoveOutTime() const;
     friend void writeCMPEQToStream(std::ofstream &os, const Eqlot &a);
     friend void writeEqlotToStream(std::ofstream &os, const Eqlot &e, const int &unit);

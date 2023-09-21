@@ -5,12 +5,12 @@
 class InlineTR
 {
 private:
-    std::string keyDE;
+    // std::string keyDE;
     std::string parameter;
     std::vector<std::vector<double>> inline_TKvec; // M1 to M9
     std::vector<std::vector<double>> inlineTK_Calculate_vec;
     // average 0,range 1,stdev 2,max 3,min 4,speclow 5,spechigh 6, spec target 7,range spec 8
-    std::string keyRoute;
+    // std::string keyRoute;
     std::string lot;             // 0
     std::string wafer;           // 1
     std::string route;           // 4
@@ -35,8 +35,11 @@ public:
     std::vector<std::vector<double>> getInlineTK_Calculate_vec() const;
     std::vector<std::vector<double>> getInlineTKvec() const;
     std::string getKeyDE() const;
+    std::string getKeyDE(const int &i) const;
     std::string getKeyWafer() const;
-    std::string getKeyEQ_Route_PU_MoveOut() const;
+    // std::string getKeyEQ_Route_PU_MoveOut() const;
+    std::string getKeyRouteName(const int &i) const;
+    std::string getRecipe() const;
     std::string getKeyRouteName() const;
     std::string getMoveOutTime() const;
     std::string getParameter() const;
@@ -45,10 +48,11 @@ public:
     std::string getProduct() const;
     std::string getProcess() const;
     std::string getRouteName() const;
+    std::string getStepName() const;
     std::string getProcessPU() const;
     size_t size() const;
     friend void writeCMPEQToStream(std::ofstream &os, const InlineTR &a);
-
+    friend void writeBasicToStream(std::ofstream &os, const InlineTR &a);
     friend void writeInlineToStream(std::ofstream &os, const InlineTR &d);
     friend void writeInlineToStream3(std::ofstream &os, const InlineTR &d);
 };

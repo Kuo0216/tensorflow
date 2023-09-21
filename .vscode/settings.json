@@ -80,6 +80,7 @@
     "future": "cpp",
     "numeric": "cpp",
     "random": "cpp",
-    "valarray": "cpp"
+    "valarray": "cpp",
+    "hash_map": "cpp"
   }
 }
