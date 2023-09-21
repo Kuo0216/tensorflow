@@ -36,6 +36,7 @@ int main()
     // // Calculate the F-test p-value
     double meanA, stddevA;
 
+    std::cout << "hello" << '\n';
     calculateMeanAndStdDev(groupA, excludeValues, meanA, stddevA);
     std::cout << "Group A: Mean = " << meanA << ", Standard Deviation = " << stddevA << std::endl;
     // Calculate and display statistics for groupB, excluding specified values
