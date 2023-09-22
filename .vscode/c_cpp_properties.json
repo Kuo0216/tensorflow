@@ -4,13 +4,12 @@
             "name": "Mac",
             "includePath": [
                 "${workspaceFolder}/**",
-                "/Users/kuochangjung/Downloads/libxlsxwriter-main/include/"
+                "/usr/local/include/**"
+               
             ],
             "defines": [],
-            "macFrameworkPath": [
-                "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks"
-            ],
-            "cppStandard": "c++23"
+            "cppStandard": "c++23",
+            "cStandard": "c23"
         }
     ],
     "version": 4

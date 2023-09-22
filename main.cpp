@@ -14,23 +14,25 @@
 #include "lookup.h"
 #include <utility>
 #include "inlinetr.h"
-#include "fttest.h"
+// #include "fttest.h"
 #include "runsheet.h"
 #include "defect.h"
 #include "eqlot.h"
 #include "Eigen/Dense"
 #include "calculate.h"
 // #include "reg.h"
+#include "gsl/gsl_statistics_double.h"
 // #include <stdio.h>
 // #include "gsl/gsl_sf_bessel.h"
 static std::unordered_map<std::string, std::string> keytypeMap{
     {"DEFECT_ANALYSIS", "DEFECT_KEY"},
     {"TK_ANALYSIS", "TK_KEY"}};
+std::vector<double> excludeValues = {0, -1};
 template <typename T>
 void calculateMeanAndStdDev(std::vector<T> &group, std::vector<T> &excludeValues, double &mean, double &stddev);
 int main()
 {
-    std::vector<double> excludeValues = {0, -1};
+
     std::vector<double> groupA = {11.2, 0, 0, -1, -1, -1, -1, -1, -1, -0};
     std::vector<double> groupB = {10.5, 10.8, 11.2, 11.0, 11.6, 10.9, 11.3, 11.7, 10.8, 11.5};
     // // Calculate the F-test p-value

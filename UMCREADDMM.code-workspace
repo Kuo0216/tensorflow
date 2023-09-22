@@ -1,10 +1,8 @@
 {
 	"folders": [
 		{
+			"name": "UMCREADDMM",
 			"path": "."
-		},
-		{
-			"path": "Eigen"
 		}
 	],
 	"settings": {
@@ -83,6 +81,7 @@
 			"stack": "cpp",
 			"filesystem": "cpp",
 			"dense": "cpp",
+			"utility": "cpp",
 			"condition_variable": "cpp",
 			"future": "cpp",
 			"numeric": "cpp",
