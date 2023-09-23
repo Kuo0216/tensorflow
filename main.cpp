@@ -74,7 +74,7 @@ int main()
     gsl_matrix_set(matrix, 0, 0, 1.0);
     gsl_matrix_set(matrix, 1, 1, 2.0);
     gsl_matrix_set(matrix, 2, 2, 3.0);
-
+    std::cout << "hello" << '\n';
     // Access and print matrix elements
     for (size_t i = 0; i < 3; ++i)
     {
