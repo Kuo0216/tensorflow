@@ -37,8 +37,8 @@ double gsl_sqrt(double db);
 int main()
 {
 
-    std::vector<double> groupA = {11.2, 0, 0, -1, -1, -1, -1, -1, -1, -0};
-    std::vector<double> groupB = {10.5, 10.8, 11.2, 11.0, 11.6, 10.9, 11.3, 11.7, 10.8, 11.5};
+    std::vector<double> groupA = {1, 2, 3, -1, -1, -1, -1, -1, -1, -0};
+    std::vector<double> groupB = {4, 5, -1, 6, 0, 0, 0, 0, -1, -1};
     // // Calculate the F-test p-value
     double meanA, stddevA;
 
@@ -49,8 +49,25 @@ int main()
     double meanB, stddevB;
     calculateMeanAndStdDev(groupB, excludeValues, meanB, stddevB);
     std::cout << "Group B: Mean = " << meanB << ", Standard Deviation = " << stddevB << std::endl;
+    double df1 = 2; // Degrees of freedom for the numerator
+    double df2 = 2; // Degrees of freedom for the denominator
 
+    // Define the F-statistic
+    double f_statistic = stddevA / stddevB; // Replace with your actual F-statistic
+    std::cout << "f_statistic\t" << f_statistic << std::endl;
+    // Calculate the p-value
+    // double p_value = gsl_cdf_fdist_P(f_statistic, df1, df2);
+    double p_value = gsl_cdf_fdist_Q(15.25, 2, 69);
+    std::cout << p_value << std::endl;
     // Degrees of freedom
+    double t = 2.0; // The t-statistic
+    int df = 10;    // Degrees of freedom
+
+    double tp_value = gsl_cdf_tdist_P(t, df);
+
+    printf("T-Statistic: %.2f\n", t);
+    printf("Degrees of Freedom: %d\n", df);
+    printf("TP-Value: %.6f\n", tp_value);
     gsl_matrix *matrix = gsl_matrix_alloc(3, 3);
 
     // Initialize the matrix elements
@@ -76,21 +93,14 @@ int main()
     // std::cout << "p-value: " << p_value << std::endl;
 
     // Define the degrees of freedom for the numerator and denominator
-    double df1 = 5.0;  // Degrees of freedom for the numerator
-    double df2 = 10.0; // Degrees of freedom for the denominator
-
-    // Define the F-statistic
-    double f_statistic = 2.0; // Replace with your actual F-statistic
-
-    // Calculate the p-value
-    double p_value = gsl_cdf_fdist_P(f_statistic, df1, df2);
 
     // Print the p-value
-    std::cout << "F-test p-value: " << p_value << std::endl;
+
     // double pValue = calculateFTestPValue(groupA, groupB);
     // double p1Value = calculateTTestPValue(groupA, groupB);
     // std::cout << "F-test p-Value: " << pValue << std::endl;
     // std::cout << "T-test p-Value: " << p1Value << std::endl;
+
     //  std::string filePath = "WAT.csv";
     // std::string filePathEQ = "EQWAFERCMP.csv";
     // std::string filePathInline = "INLINE.csv";
