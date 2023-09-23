@@ -62,7 +62,10 @@
                 "eqlot.cpp",
                 "defect.cpp",
                 "-o",
-                "${fileDirname}/rooster"
+                "${fileDirname}/rooster",
+                "-lgsl", 
+                "-lgslcblas",
+                "-lm"
             ],
             "options": {
                 "cwd": "${fileDirname}"

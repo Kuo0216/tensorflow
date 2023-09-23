@@ -18,10 +18,12 @@
 #include "runsheet.h"
 #include "defect.h"
 #include "eqlot.h"
-#include "Eigen/Dense"
+// #include <Eigen/Dense>
 #include "calculate.h"
 // #include "reg.h"
-#include "gsl/gsl_statistics_double.h"
+// #include "gsl/gsl_statistics_double.h"
+#include <gsl/gsl_matrix.h>
+#include <gsl/gsl_cdf.h>
 // #include <stdio.h>
 // #include "gsl/gsl_sf_bessel.h"
 static std::unordered_map<std::string, std::string> keytypeMap{
@@ -30,6 +32,8 @@ static std::unordered_map<std::string, std::string> keytypeMap{
 std::vector<double> excludeValues = {0, -1};
 template <typename T>
 void calculateMeanAndStdDev(std::vector<T> &group, std::vector<T> &excludeValues, double &mean, double &stddev);
+// using Eigen::MatrixXd;
+double gsl_sqrt(double db);
 int main()
 {
 
@@ -45,6 +49,44 @@ int main()
     double meanB, stddevB;
     calculateMeanAndStdDev(groupB, excludeValues, meanB, stddevB);
     std::cout << "Group B: Mean = " << meanB << ", Standard Deviation = " << stddevB << std::endl;
+
+    // Degrees of freedom
+    gsl_matrix *matrix = gsl_matrix_alloc(3, 3);
+
+    // Initialize the matrix elements
+    gsl_matrix_set(matrix, 0, 0, 1.0);
+    gsl_matrix_set(matrix, 1, 1, 2.0);
+    gsl_matrix_set(matrix, 2, 2, 3.0);
+
+    // Access and print matrix elements
+    for (size_t i = 0; i < 3; ++i)
+    {
+        for (size_t j = 0; j < 3; ++j)
+        {
+            std::cout << gsl_matrix_get(matrix, i, j) << " ";
+        }
+        std::cout << std::endl;
+    }
+
+    // Free the matrix when done
+    gsl_matrix_free(matrix);
+    // Calculate the p-value
+    // double p_value = gsl_cdf_fdist_P(2, 1, 1);
+
+    // std::cout << "p-value: " << p_value << std::endl;
+
+    // Define the degrees of freedom for the numerator and denominator
+    double df1 = 5.0;  // Degrees of freedom for the numerator
+    double df2 = 10.0; // Degrees of freedom for the denominator
+
+    // Define the F-statistic
+    double f_statistic = 2.0; // Replace with your actual F-statistic
+
+    // Calculate the p-value
+    double p_value = gsl_cdf_fdist_P(f_statistic, df1, df2);
+
+    // Print the p-value
+    std::cout << "F-test p-value: " << p_value << std::endl;
     // double pValue = calculateFTestPValue(groupA, groupB);
     // double p1Value = calculateTTestPValue(groupA, groupB);
     // std::cout << "F-test p-Value: " << pValue << std::endl;

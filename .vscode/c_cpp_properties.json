@@ -3,13 +3,14 @@
         {
             "name": "Mac",
             "includePath": [
-                "${workspaceFolder}/**",
-                "/usr/local/include/**"
-               
+                "${workspaceFolder}/**"
+                
             ],
             "defines": [],
             "cppStandard": "c++23",
-            "cStandard": "c23"
+            "cStandard": "c23",
+            "compilerPath": "/usr/bin/g++",
+            "intelliSenseMode": "macos-gcc-x86"
         }
     ],
     "version": 4

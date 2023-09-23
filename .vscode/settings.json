@@ -81,6 +81,9 @@
     "numeric": "cpp",
     "random": "cpp",
     "valarray": "cpp",
-    "hash_map": "cpp"
+    "hash_map": "cpp",
+    "__verbose_abort": "cpp",
+    "charconv": "cpp",
+    "thread": "cpp"
   }
 }
